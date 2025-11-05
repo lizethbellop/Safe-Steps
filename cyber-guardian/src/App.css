@@ -1,0 +1,97 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Contenedor principal - ocupa toda la pantalla */
+.menu-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Imagen de fondo - SIN filtro para que se vea tal cual */
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('./assets/images/menu-background.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Contenedor del texto y botones */
+.menu-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Título principal con estilo cartoon */
+.game-title {
+  font-size: 80px;
+  font-weight: 900;
+  color: #FFD700;
+  text-shadow: 
+    4px 4px 0px #FF6B35,
+    8px 8px 0px #000;
+  margin-bottom: 60px;
+  font-family: 'Lilita One', sans-serif;
+  letter-spacing: 3px;
+}
+
+/* Subtítulo */
+.game-subtitle {
+  font-size: 28px;
+  color: white;
+  text-shadow: 
+    2px 2px 0px #000;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+/* Botón de jugar - estilo naranja con borde amarillo */
+.play-button {
+  background: linear-gradient(180deg, #FFB347 0%, #FF8C42 100%);
+  color: white;
+  font-size: 32px;
+  font-weight: 900;
+  padding: 20px 60px;
+  border: 5px solid #FFD700;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 0px #CC6600,
+    0 12px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+  font-family: 'Fredoka', sans-serif;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+  position: relative;
+  top: 0;
+}
+
+/* Efecto hover */
+.play-button:hover {
+  transform: scale(1.08);
+  box-shadow: 
+    0 8px 0px #CC6600,
+    0 15px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Efecto al hacer click */
+.play-button:active {
+  top: 4px;
+  box-shadow: 
+    0 4px 0px #CC6600,
+    0 8px 15px rgba(0, 0, 0, 0.4);
+}
