@@ -4,30 +4,40 @@ import { usePerfil } from './PerfilContext';
 
 function MenuPrueba() {
   const navigate = useNavigate();
-  const { perfilActivo, guardarPerfil, actualizarModoEnfoque } = usePerfil();
+  const { perfilActivo, actualizarModoEnfoque, cerrarSesion } = usePerfil();
   const [modoEnfoque, setModoEnfoque] = useState(perfilActivo?.modoEnfoque || false);
   
   const jugar = (juegoId) => {
-    // Si no hay perfil, crear uno temporal
-    if (!perfilActivo) {
-      const perfil = {
-        nombre: "Jugador de Prueba",
-        modoEnfoque: modoEnfoque
-      };
-      guardarPerfil(perfil);
-    } else {
-      // Si ya hay perfil, solo actualizar el modo enfoque si cambió
-      if (perfilActivo.modoEnfoque !== modoEnfoque) {
-        actualizarModoEnfoque(modoEnfoque);
-      }
+    // Actualizar el modo enfoque si cambió
+    if (perfilActivo && perfilActivo.modoEnfoque !== modoEnfoque) {
+      actualizarModoEnfoque(modoEnfoque);
     }
     
     // Ir al juego
     navigate(`/juego/${juegoId}`);
   };
+
+  const handleCerrarSesion = () => {
+    if (window.confirm('¿Seguro que quieres cerrar sesión?')) {
+      cerrarSesion();
+      navigate('/profiles');
+    }
+  };
   
   return (
     <div style={styles.container}>
+      {/* Header con info del perfil */}
+      <div style={styles.header}>
+        <div style={styles.perfilInfo}>
+          <span style={styles.bienvenida}>
+            👋 Hola, {perfilActivo?.nombre || 'Jugador'}! (@{perfilActivo?.apodo || 'Guest'})
+          </span>
+        </div>
+        <button onClick={handleCerrarSesion} style={styles.botonCerrarSesion}>
+          🚪 Cerrar Sesión
+        </button>
+      </div>
+
       <h1 style={styles.titulo}>🎮 Juegos Educativos de Seguridad Digital</h1>
       
       {/* Selector de modo */}
@@ -40,7 +50,7 @@ function MenuPrueba() {
             style={styles.checkbox}
           />
           <span style={styles.textoModo}>
-            {modoEnfoque ? '🧠 Modo Mariana (Enfoque/TDAH)' : '🎨 Modo Mario (Normal)'}
+            {modoEnfoque ? '🧠 Modo Enfoque (TDAH)' : '🎨 Modo Normal'}
           </span>
         </label>
         <p style={styles.descripcionModo}>
@@ -125,6 +135,37 @@ const styles = {
     background: '#87CEEB',
     padding: '40px 20px',
     fontFamily: "'Poppins', -apple-system, sans-serif"
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    maxWidth: '1400px',
+    margin: '0 auto 20px',
+    padding: '0 20px',
+    flexWrap: 'wrap',
+    gap: '10px',
+  },
+  perfilInfo: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    padding: '10px 20px',
+    borderRadius: '10px',
+  },
+  bienvenida: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  botonCerrarSesion: {
+    padding: '10px 20px',
+    fontSize: '16px',
+    backgroundColor: '#e74c3c',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    transition: 'background-color 0.3s',
   },
   titulo: {
     color: 'white',
