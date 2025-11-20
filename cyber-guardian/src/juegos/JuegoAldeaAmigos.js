@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from '../PerfilContext'; 
 import { User, MapPin, FileText, Image as ImageIcon, Loader } from 'lucide-react';
@@ -6,30 +6,11 @@ import { AVATAR_MAPPER } from '../assets/pfps/AvatarMapper';
 
 // 🎯 CONSTANTES
 const GAME_CONSTANTS = {
-  NUM_PROFILES: 10, // ✅ CAMBIADO A 10
+  NUM_PROFILES: 10,
   SCORE_PER_CORRECT_ANSWER: 100,
   
-  GEMINI_API_KEY: 'AIzaSyA3EQMAn-Qa26125Mjm3qCBt4fUeJrZmD4', 
-  GEMINI_MODEL: 'gemini-1.5-flash',
-};
-
-const getRandomAvatar = (esSeguro, genero) => {
-    let list = [];
-
-    if (!esSeguro) {
-        list = AVATAR_MAPPER.WARNING;
-    } else {
-        if (genero === 'niña') {
-            list = AVATAR_MAPPER.GIRL;
-        } else {
-            list = AVATAR_MAPPER.BOY;
-        }
-    }
-
-    if (!list || list.length === 0) return 'https://via.placeholder.com/150';
-    
-    const randomIndex = Math.floor(Math.random() * list.length);
-    return list[randomIndex];
+  GEMINI_API_KEY: process.env.REACT_APP_GEMINI_API_KEY, 
+  GEMINI_MODEL: 'gemini-2.0-flash',
 };
 
 const JuegoAldeaAmigos = () => {
@@ -44,22 +25,192 @@ const JuegoAldeaAmigos = () => {
   const [mostrandoResultado, setMostrandoResultado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [puntosPartida, setPuntosPartida] = useState(0);
+  
+  // ✅ useRef para tracking síncrono de avatares
+  const avataresUsadosRef = useRef({
+    GIRL: [],
+    BOY: [],
+    WARNING: []
+  });
+
+  const getRandomAvatar = (esSeguro, genero) => {
+    let categoria = '';
+    let list = [];
+
+    if (!esSeguro) {
+        categoria = 'WARNING';
+        list = AVATAR_MAPPER.WARNING;
+    } else {
+        if (genero === 'niña') {
+            categoria = 'GIRL';
+            list = AVATAR_MAPPER.GIRL;
+        } else {
+            categoria = 'BOY';
+            list = AVATAR_MAPPER.BOY;
+        }
+    }
+
+    if (!list || list.length === 0) return 'https://via.placeholder.com/150';
+    
+    // ✅ Usar el ref (síncrono)
+    const usados = avataresUsadosRef.current[categoria];
+    const disponibles = list.filter(avatar => !usados.includes(avatar));
+    
+    // Si ya se usaron todos, resetear esa categoría
+    let listaFinal = disponibles;
+    if (disponibles.length === 0) {
+        avataresUsadosRef.current[categoria] = [];
+        listaFinal = list;
+    }
+    
+    // Elegir uno aleatorio
+    const randomIndex = Math.floor(Math.random() * listaFinal.length);
+    const avatarElegido = listaFinal[randomIndex];
+    
+    // ✅ Actualizar sincrónicamente
+    avataresUsadosRef.current[categoria].push(avatarElegido);
+    
+    return avatarElegido;
+  };
 
   const generateProfile = async () => {
-    // 🤖 MARCA ESPECIAL: Si viene de la IA, tendrá un emoji único
-    const prompt = `Genera un perfil de usuario para un videojuego (tipo Roblox/Minecraft) para evaluar seguridad digital.
+    // Arrays de opciones para máxima variedad
+    const artistasFavoritos = [
+      // Pop/Urbano actual
+      'Olivia Rodrigo', 'Bad Bunny', 'Cris MJ', 'Taylor Swift', 'Peso Pluma', 
+      'Feid', 'Karol G', 'Dua Lipa', 'Bizarrap', 'Quevedo', 'Shakira',
+      'Rauw Alejandro', 'Maria Becerra', 'Billie Eilish', 'Duki', 'Tini', 'Aitana', 'Álvaro Díaz',
+      // K-pop
+      'BTS', 'BLACKPINK', 'Stray Kids', 'NewJeans', 'TWICE', 'Babymonster', 'Exo',
+      // Para niños más pequeños (8-9 años)
+      'Lara Campos', 'Luli Pampin', 'Karol Sevilla', 'Elenco de Soy Luna',
+      'Elenco de Violetta', 'Sebastián Yatra', 'Lasso', 'Mau y Ricky'
+    ];
     
-    Responde SOLO con este JSON (sin markdown):
-    {
-      "nombre": "Nombre de usuario (ej: GamerPro, Kitty2010, User_X, o nombres raros si es peligroso)",
-      "genero": "niño" o "niña", 
-      "edad": "Edad (ej: 11 años, 12 años, 'No dice', o '35 años' si es peligroso)",
-      "ubicacion": "Ubicación (ej: Tu ciudad, Mundo Minecraft, o algo vago)",
-      "descripcion": "Bio del perfil. SI ES SEGURO: gustos normales de niños (ej: 'Me gusta construir'). SI ES PELIGROSO: pide datos, invita a privado, ofrece regalos, o es extraño.",
-      "fotos_emoji": ["🎮", "👾", "🍕"], 
-      "esSeguro": true o false,
-      "razon": "Breve explicación educativa de por qué es seguro o peligroso."
-    }`;
+    const peliculas = [
+      // Animadas variadas
+      'Encanto', 'Coco', 'Spider-Man: Across the Spider-Verse', 'Mario Bros',
+      'Intensamente', 'Mi Villano Favorito', 'Kung Fu Panda', 'Shrek', 'La familia Mitchel',
+      // No Disney
+      'Hotel Transylvania', 'Coraline', 'ParaNorman', 'Kubo',
+      'Star Wars', 'Harry Potter', 'Jurassic World', 'Transformers', 'El cadaver de la novia',
+      // Más actuales
+      'Barbie', 'Wonka', 'FNAF la Película', 
+      'Demon Slayer: Mugen Train', 'Sonic la Película', 'Wicked', 'Thunderbolts'
+    ];
+    
+    const series = [
+      'Stranger Things', 'Wednesday', 'One Piece', 'Demon Slayer', 
+      'My Hero Academia', 'Naruto', 'Dragon Ball', 'Bluey', 'Ladybug',
+      'Los Simpsons', 'Bob Esponja', 'Gravity Falls', 'Avatar La Leyenda de Aang',
+      'Cobra Kai', 'Heartstopper', 'Squid Game', 'The Mandalorian'
+    ];
+    
+    const personajes = [
+      // Superhéroes
+      'Spider-Man', 'Batman', 'Superman', 'Wonder Woman', 'Iron Man', 'Capitan America',
+      // Anime/Series actuales
+      'Tanjiro', 'Nezuko', 'Goku', 'Naruto', 'Deku',
+      // Infantiles actuales
+      'Bluey', 'Bingo', 'Ladybug', 'Cat Noir', 'Wednesday', 'Princesita Sofia',
+      // Clásicos queridos
+      'Stitch', 'Pikachu', 'Charmander'
+    ];
+    
+    const hobbies = [
+      'dibujar anime', 'hacer TikToks', 'jugar fútbol', 'tocar guitarra',
+      'bailar K-pop', 'hacer slime', 'coleccionar cartas Pokémon', 
+      'patinar', 'nadar', 'hacer parkour', 'cocinar postres',
+      'construir con LEGO', 'hacer manualidades', 'leer manga',
+      'ver streams de Twitch', 'jugar basquetbol', 'hacer gimnasia', 'jugar Volleyball', 'ver YouTube'
+    ];
+    
+    const ciudadesMX = [
+      'CDMX', 'Guadalajara', 'Monterrey', 'Puebla', 'Tijuana', 'León',
+      'Cancún', 'Mérida', 'Querétaro', 'Aguascalientes', 'Oaxaca',
+      'Veracruz', 'Chihuahua', 'Morelia', 'Toluca', 'San Luis Potosí', 'Magdalena Chichicaspa', 'Campeche', 'Saltillo'
+    ];
+    
+    const juegos = [
+      'Minecraft', 'Roblox', 'Fortnite', 'Among Us', 'FIFA', 'GTA',
+      'Valorant', 'League of Legends', 'Genshin Impact', 'Brawl Stars',
+      'Clash Royale', 'Call of Duty', 'Rocket League', 'Fall Guys',
+      'Stumble Guys', 'Free Fire', 'PUBG', 'Apex Legends'
+    ];
+
+    // Tipos de perfiles peligrosos más variados
+    const tiposPeligrosos = [
+      'pide_whatsapp', 'ofrece_robux', 'pide_fotos', 'adulto_mentor',
+      'pide_contraseña', 'quiere_privado', 'ofrece_dinero', 'pide_direccion',
+      'falso_youtuber', 'falso_moderador', 'pide_tiktok', 'hacer_racha_tiktok'
+    ];
+
+    // Seleccionar elementos aleatorios
+    const artistaRandom = artistasFavoritos[Math.floor(Math.random() * artistasFavoritos.length)];
+    const peliRandom = peliculas[Math.floor(Math.random() * peliculas.length)];
+    const serieRandom = series[Math.floor(Math.random() * series.length)];
+    const personajeRandom = personajes[Math.floor(Math.random() * personajes.length)];
+    const hobbyRandom = hobbies[Math.floor(Math.random() * hobbies.length)];
+    const ciudadRandom = ciudadesMX[Math.floor(Math.random() * ciudadesMX.length)];
+    const juegoRandom = juegos[Math.floor(Math.random() * juegos.length)];
+    const peligroRandom = tiposPeligrosos[Math.floor(Math.random() * tiposPeligrosos.length)];
+    
+    const esSeguro = Math.random() > 0.4; // 60% seguros, 40% peligrosos
+    const esNiña = Math.random() > 0.5;
+    const randomSeed = Math.random().toString(36).substring(7);
+    
+    const prompt = `Genera UN perfil ÚNICO de usuario para un videojuego infantil.
+
+DATOS PARA USAR (elige algunos, no todos):
+- Artista favorito: ${artistaRandom}
+- Película favorita: ${peliRandom}
+- Serie favorita: ${serieRandom}
+- Personaje favorito: ${personajeRandom}
+- Hobby: ${hobbyRandom}
+- Ciudad: ${ciudadRandom}
+- Juego favorito: ${juegoRandom}
+- Seed: ${randomSeed}
+
+TIPO DE PERFIL: ${esSeguro ? 'SEGURO' : 'PELIGROSO'}
+GÉNERO: ${esNiña ? 'niña' : 'niño'}
+${!esSeguro ? `TIPO DE PELIGRO: ${peligroRandom}` : ''}
+
+${esSeguro ? `
+PERFIL SEGURO - Debe incluir:
+- Username creativo relacionado con sus gustos
+- Edad entre 8-13 años
+- Descripción mencionando 2-3 de sus gustos (artista, peli, hobby, etc.)
+- Emojis relacionados con sus intereses
+- Sin información personal sensible
+` : `
+PERFIL PELIGROSO (${peligroRandom}) - Debe incluir señales de alerta como:
+${peligroRandom === 'pide_whatsapp' ? '- Pide número de WhatsApp o redes sociales privadas' : ''}
+${peligroRandom === 'ofrece_robux' ? '- Ofrece Robux/V-Bucks/skins gratis a cambio de algo' : ''}
+${peligroRandom === 'pide_fotos' ? '- Pide fotos o videollamadas privadas' : ''}
+${peligroRandom === 'adulto_mentor' ? '- Adulto que quiere ser "mentor" o "amigo especial"' : ''}
+${peligroRandom === 'pide_contraseña' ? '- Pide contraseñas prometiendo regalos' : ''}
+${peligroRandom === 'quiere_privado' ? '- Insiste en hablar en privado, sin que sepan los papás' : ''}
+${peligroRandom === 'ofrece_dinero' ? '- Ofrece dinero o regalos costosos' : ''}
+${peligroRandom === 'pide_direccion' ? '- Pide dirección o escuela donde estudia' : ''}
+${peligroRandom === 'falso_youtuber' ? '- Se hace pasar por YouTuber/streamer famoso' : ''}
+${peligroRandom === 'falso_moderador' ? '- Finge ser moderador del juego pidiendo datos' : ''}
+${peligroRandom === 'pide_tiktok' ? '- Pide ver los videos privados de tiktok' : ''}
+${peligroRandom === 'hacer_racha_tiktok' ? '- No te conoce y quiere iniciar racha en tiktok' : ''}
+- Edad adulta o "no dice"
+- Ubicación vaga o sospechosa
+`}
+
+Responde SOLO con este JSON:
+{
+  "nombre": "Username único y creativo",
+  "genero": "${esNiña ? 'niña' : 'niño'}",
+  "edad": "edad apropiada",
+  "ubicacion": "lugar",
+  "descripcion": "Bio detallada con gustos específicos o señales de peligro",
+  "fotos_emoji": ["emoji1", "emoji2", "emoji3"],
+  "esSeguro": ${esSeguro},
+  "razon": "Explicación educativa de por qué es seguro o qué señales de peligro tiene"
+}`;
 
     try {
       const response = await fetch(
@@ -70,8 +221,8 @@ const JuegoAldeaAmigos = () => {
           body: JSON.stringify({
             contents: [{ role: "user", parts: [{ text: prompt }] }],
             generationConfig: { 
-              maxOutputTokens: 350, 
-              temperature: 0.9 
+              maxOutputTokens: 500, 
+              temperature: 1.3
             }
           }),
         }
@@ -98,7 +249,6 @@ const JuegoAldeaAmigos = () => {
 
       const avatarPath = getRandomAvatar(profileData.esSeguro, profileData.genero);
 
-      // ✅ MARCA DE IA: Agregamos un badge especial
       return { ...profileData, avatarPath, generadoPorIA: true };
 
     } catch (error) {
@@ -115,7 +265,7 @@ const JuegoAldeaAmigos = () => {
           esSeguro: true,
           razon: "Es un niño con intereses normales y no pide información personal.",
           avatarPath: getRandomAvatar(true, "niño"),
-          generadoPorIA: false // ⚠️ FALLBACK
+          generadoPorIA: false
         },
         {
           nombre: "SuperAdult99",
@@ -235,8 +385,15 @@ const JuegoAldeaAmigos = () => {
     setLoading(true);
     setPuntosPartida(0);
     setDecisionesCorrectas(0);
-    setMostrandoResultado(false); // ✅ RESETEAR ESTADO
-    setMensaje(''); // ✅ RESETEAR MENSAJE
+    setMostrandoResultado(false);
+    setMensaje('');
+    
+    // ✅ Resetear el ref sincrónicamente
+    avataresUsadosRef.current = {
+        GIRL: [],
+        BOY: [],
+        WARNING: []
+    };
     
     try {
       const promises = Array(GAME_CONSTANTS.NUM_PROFILES).fill().map(() => generateProfile());
@@ -259,7 +416,7 @@ const JuegoAldeaAmigos = () => {
   };
 
   const tomarDecision = (esAceptar) => {
-    if (mostrandoResultado) return; // ✅ PREVENIR DOBLE CLICK
+    if (mostrandoResultado) return;
 
     const acerto = (esAceptar === perfilActual.esSeguro);
 
@@ -308,7 +465,6 @@ const JuegoAldeaAmigos = () => {
         {gameState === 'playing' && perfilActual && (
             <div style={styles.cardContainer}>
                 
-                {/* 🤖 INDICADOR DE IA */}
                 {perfilActual.generadoPorIA && (
                     <div style={styles.iaBadge}>
                         🤖 Generado por IA
