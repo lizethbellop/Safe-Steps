@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
 
 // Importar TODAS tus imágenes disponibles
-import aguijaImg from './assets/images/aguija.jpeg';
+import aguijaImg from './assets/images/aguila.jpeg';
 import conejoImg from './assets/images/conejo.jpeg';
 import loboImg from './assets/images/lobo.jpeg';
 import toroImg from './assets/images/toro.jpeg';
@@ -14,7 +14,7 @@ import gatoImg from './assets/images/gato.jpeg';
 
 export default function AñadirPerfil() {
   const navigate = useNavigate();
-  const { guardarPerfil } = usePerfil();
+  const { agregarPerfil } = usePerfil();
   
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
@@ -42,7 +42,6 @@ export default function AñadirPerfil() {
     { id: 15, emoji: '🧚‍♀️', name: 'Hada', color: '#00bcd4' },
     { id: 16, emoji: '🦄', name: 'Unicornio', color: '#e91e63' },
   ];
-
 
   const handleContinue = () => {
     if (!name.trim()) {
@@ -75,12 +74,13 @@ export default function AñadirPerfil() {
       puntosExperiencia: 0,
     };
 
-    const guardadoExitoso = guardarPerfil(perfilData, false);
+    // Guardar perfil en la lista de perfiles
+    const guardadoExitoso = agregarPerfil(perfilData);
     
     if (guardadoExitoso) {
       console.log('Perfil creado y guardado:', perfilData);
-      alert(`¡Perfil creado exitosamente!\n\nNombre: ${name}\nApodo: ${nickname}\nAvatar: ${avatar.name}`);
-      navigate('/menu-juegos');
+      // ✅ Volver a la pantalla de selección de perfiles
+      navigate('/profiles');
     } else {
       alert('Error al guardar el perfil. Por favor intenta de nuevo.');
     }

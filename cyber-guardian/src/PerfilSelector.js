@@ -2,53 +2,18 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
 
-// Importar imágenes desde assets
-import conejoImg from './assets/images/conejo.jpeg';
-import loboImg from './assets/images/lobo.jpeg'; // Asegúrate de tener esta imagen
-
 export default function ProfileSelector() {
   const navigate = useNavigate();
-  const { guardarPerfil } = usePerfil();
-
-  const perfiles = [
-    {
-      id: 1,
-      nombre: 'Mariana',
-      apodo: 'Warrior',
-      avatar: conejoImg,
-      color: '#9b59b6'
-    },
-    {
-      id: 2,
-      nombre: 'Mario',
-      apodo: 'Shadow',
-      avatar: loboImg,
-      color: '#3498db'
-    }
-  ];
+  const { perfilesGuardados, seleccionarPerfil } = usePerfil();
 
   const handleSelectProfile = (perfil) => {
-    // Guardar el perfil en el contexto
-    const perfilData = {
-      id: perfil.id,
-      nombre: perfil.nombre,
-      apodo: perfil.apodo,
-      avatar: perfil.avatar,
-      modoEnfoque: false,
-      fechaCreacion: new Date().toISOString(),
-      nivelActual: 1,
-      puntosExperiencia: 0,
-    };
-
-    const guardadoExitoso = guardarPerfil(perfilData, false);
+    const guardadoExitoso = seleccionarPerfil(perfil.id);
     
     if (guardadoExitoso) {
-      console.log('Perfil guardado:', perfilData);
-      // Navegar a tu pantalla principal del juego
-      // Ajusta esta ruta según tu App.js
-      navigate('/menu-juego'); 
+      console.log('Perfil seleccionado:', perfil);
+      navigate('/menu-juegos');
     } else {
-      alert('Error al guardar el perfil');
+      alert('Error al seleccionar el perfil');
     }
   };
 
@@ -67,7 +32,7 @@ export default function ProfileSelector() {
         <h2 style={styles.subtitle}>¿Quién eres? Elige tu perfil</h2>
 
         <div style={styles.profilesContainer}>
-          {perfiles.map((perfil) => (
+          {perfilesGuardados.map((perfil) => (
             <div
               key={perfil.id}
               style={styles.profileCard}
@@ -76,14 +41,28 @@ export default function ProfileSelector() {
               <div
                 style={{
                   ...styles.profileAvatar,
-                  borderColor: perfil.color
+                  borderColor: perfil.avatarColor || '#3498db',
+                  backgroundColor: perfil.avatarColor || '#3498db'
                 }}
               >
-                <img
-                  src={perfil.avatar}
-                  alt={perfil.nombre}
-                  style={styles.avatarImage}
-                />
+                {typeof perfil.avatar === 'string' && perfil.avatar.startsWith('data:') ? (
+                  // Es una imagen (base64 o URL de imagen)
+                  <img
+                    src={perfil.avatar}
+                    alt={perfil.nombre}
+                    style={styles.avatarImage}
+                  />
+                ) : typeof perfil.avatar === 'string' && perfil.avatar.length <= 4 ? (
+                  // Es un emoji
+                  <span style={styles.avatarEmoji}>{perfil.avatar}</span>
+                ) : (
+                  // Es una URL de imagen
+                  <img
+                    src={perfil.avatar}
+                    alt={perfil.nombre}
+                    style={styles.avatarImage}
+                  />
+                )}
               </div>
               <div style={styles.profileName}>{perfil.nombre}</div>
             </div>
@@ -97,9 +76,11 @@ export default function ProfileSelector() {
           </div>
         </div>
 
-        <button style={styles.manageButton} onClick={handleManageProfiles}>
-          ADMINISTRAR PERFILES
-        </button>
+        {perfilesGuardados.length > 0 && (
+          <button style={styles.manageButton} onClick={handleManageProfiles}>
+            ADMINISTRAR PERFILES
+          </button>
+        )}
       </div>
     </div>
   );
@@ -166,6 +147,9 @@ const styles = {
     height: '100%',
     objectFit: 'cover',
     objectPosition: 'center top',
+  },
+  avatarEmoji: {
+    fontSize: '5rem',
   },
   profileName: {
     fontSize: '1.3rem',
