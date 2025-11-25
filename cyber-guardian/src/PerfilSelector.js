@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
+import logo from './assets/images/logo.png';   // ⬅️ Aquí importas tu logo
 
 export default function ProfileSelector() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function ProfileSelector() {
 
   const handleSelectProfile = (perfil) => {
     const guardadoExitoso = seleccionarPerfil(perfil.id);
-    
+
     if (guardadoExitoso) {
       console.log('Perfil seleccionado:', perfil);
       navigate('/menu-juegos');
@@ -28,7 +29,14 @@ export default function ProfileSelector() {
   return (
     <div style={styles.container}>
       <div style={styles.content}>
-        <h1 style={styles.title}>CYBER GUARDIAN</h1>
+
+        {/* LOGO DEL JUEGO */}
+        <img
+          src={logo}
+          alt="logo juego"
+          style={styles.logo}
+        />
+
         <h2 style={styles.subtitle}>¿Quién eres? Elige tu perfil</h2>
 
         <div style={styles.profilesContainer}>
@@ -46,17 +54,14 @@ export default function ProfileSelector() {
                 }}
               >
                 {typeof perfil.avatar === 'string' && perfil.avatar.startsWith('data:') ? (
-                  // Es una imagen (base64 o URL de imagen)
                   <img
                     src={perfil.avatar}
                     alt={perfil.nombre}
                     style={styles.avatarImage}
                   />
                 ) : typeof perfil.avatar === 'string' && perfil.avatar.length <= 4 ? (
-                  // Es un emoji
                   <span style={styles.avatarEmoji}>{perfil.avatar}</span>
                 ) : (
-                  // Es una URL de imagen
                   <img
                     src={perfil.avatar}
                     alt={perfil.nombre}
@@ -81,6 +86,7 @@ export default function ProfileSelector() {
             ADMINISTRAR PERFILES
           </button>
         )}
+
       </div>
     </div>
   );
@@ -89,7 +95,7 @@ export default function ProfileSelector() {
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+    background: 'linear-gradient(135deg, #0c0077ff 0%, #7152b3ff 50%, #9f1dfbff 100%)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -101,6 +107,15 @@ const styles = {
     maxWidth: '1200px',
     width: '100%',
   },
+
+  /* ⭐ NUEVO: ESTILO DEL LOGO ⭐ */
+  logo: {
+    width: '180px',
+    height: 'auto',
+    marginBottom: '20px',
+    filter: 'drop-shadow(0px 3px 6px rgba(0,0,0,0.4))'
+  },
+
   title: {
     fontSize: '3.5rem',
     color: 'white',
@@ -153,7 +168,7 @@ const styles = {
   },
   profileName: {
     fontSize: '1.3rem',
-    color: '#e0e0e0',
+    color: '#f1f1f1ff',
     fontWeight: '500',
   },
   addProfile: {
@@ -169,18 +184,20 @@ const styles = {
   },
   addIcon: {
     fontSize: '5rem',
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255, 255, 255, 0.75)',
   },
   manageButton: {
     padding: '15px 40px',
     fontSize: '1.2rem',
-    backgroundColor: 'transparent',
+    background: 'linear-gradient(135deg, #4fa8c8ff, #28046fff)',
     color: 'white',
-    border: '2px solid rgba(255, 255, 255, 0.6)',
-    borderRadius: '5px',
+    border: 'none',
+    borderRadius: '50px',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    fontWeight: '500',
+    transition: 'all 0.25s ease',
+    fontWeight: '700',
     letterSpacing: '0.5px',
+    margin: 0,
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
   },
 };

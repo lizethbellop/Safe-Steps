@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
 import fondoTesoro from './assets/images/fondoTesoro.png';
 import fondoAldea from './assets/images/fondoAmigos.png';
+import fondoEscudo from './assets/images/fondoEscudo.png';
 import iconoTesoro from './assets/images/tesoroIcono.png'; 
 import iconoEscudo from './assets/images/escudoIcono.png'; 
 import iconoAldea from './assets/images/amigosIcono.png';
@@ -37,7 +38,7 @@ const styles = {
   },
 
   imagenPerfil: {
-    width: '110px', height: '110px', objectFit: 'cover', borderRadius: '50%', marginBottom: '15px', border: '4px solid white', boxShadow: '0 8px 20px rgba(0,0,0,0.1)', 
+    width: '110px', height: '110px', objectFit: 'cover', borderRadius: '50%', marginBottom: '15px', border: '4px solid white', boxShadow: '0 8px 20px rgba(0,0,0,0.1)', objectPosition: 'center top',
   },
   
   placeholderImagen: {
@@ -101,7 +102,7 @@ function MenuPrueba() {
     {
       id: "tesoro-privacidad",
       titulo: "Tesoro de Privacidad",
-      descripcion: "Protege tus datos más valiosos arratrándolos al cofre de seguridad.",
+      descripcion: "Protege tus datos más valiosos arrastrándolos al cofre de seguridad.",
       objetivo: "Aprender a identificar datos sensibles.",
       icono: iconoTesoro,
       fondo: fondoTesoro,
@@ -121,7 +122,7 @@ function MenuPrueba() {
         buttonShadow: 'none',
         colorDescripcion: '#1f0c02ff',
         colorObjetivo: '#211000ff',
-        focusKeywords: ['Protege', 'datos', 'cofre de seguridad', 'valiosos'],
+        focusKeywords: ['Protege', 'datos', 'arrastrándolos','cofre de seguridad', 'valiosos'],
       }
     },
     {
@@ -130,7 +131,7 @@ function MenuPrueba() {
       descripcion: "Elige estrategias para defenderte del ciberacoso.",
       objetivo: "Aprender estrategias contra el bullying.",
       icono: iconoEscudo,
-      fondo: fondoTesoro, 
+      fondo: fondoEscudo, 
       theme: {
         bgGradient: 'linear-gradient(135deg, #7858d2ff 0%, #bce8f9ff 100%)', 
         primary: '#16004cff', accent: '#054789ff',      
@@ -220,8 +221,8 @@ function MenuPrueba() {
       <div style={{...styles.columnaIzquierda, backgroundColor: modoEnfoque ? '#f5f5f5' : '#FFFFFF'}}>
         
         <div style={{...styles.infoUsuario, background: bgHeaderSidebar}}>
-          {perfilActivo?.avatar ? (
-            <img src={perfilActivo.avatar} alt="Avatar" style={styles.imagenPerfil} />
+          {perfilActivo?.avatarSrcS ? (
+            <img src={perfilActivo.avatarSrcS} alt="Avatar" style={styles.imagenPerfil} />
           ) : (
             <div style={styles.placeholderImagen}>No Image</div>
           )}

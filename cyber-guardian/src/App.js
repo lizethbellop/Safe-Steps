@@ -3,13 +3,12 @@ import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'r
 import { PerfilProvider, usePerfil } from './PerfilContext';
 import './App.css';
 
-// Importar componentes con los nombres EXACTOS de tus archivos
 import ContenedorJuego from './ContenedorJuego';
 import MenuPrueba from './MenuPrueba';
-import PerfilSelector from './PerfilSelector';   // ← Nombre correcto
-import AñadirPerfil from './AñadirPerfil';       // ← Nombre correcto
+import PerfilSelector from './PerfilSelector';
+import AñadirPerfil from './AñadirPerfil';
 
-// Componente para proteger rutas que necesitan perfil
+// Ruta protegida
 function ProtectedRoute({ children }) {
   const { perfilActivo, cargando } = usePerfil();
 
@@ -36,63 +35,56 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-// Tu componente de menú principal
+// Menú principal SOLO con el botón arcade
 function MenuPrincipal() {
   const navigate = useNavigate();
-  
+
   return (
     <div className="menu-container">
       <div className="background-image"></div>
-      
+
       <div className="menu-content">
-        <h1 className="game-title">CYBER GUARDIAN</h1>
-        <p className="game-subtitle">Protege el mundo digital</p>
-        
-        <button 
+        <button
           className="play-button"
           onClick={() => navigate('/profiles')}
         >
-          ¡JUGAR AHORA!
+          ¡JUGAR!
         </button>
       </div>
     </div>
   );
 }
 
-// Componente principal con rutas
 function App() {
   return (
     <PerfilProvider>
       <Router>
         <Routes>
-          {/* Menú principal inicial */}
+
           <Route path="/" element={<MenuPrincipal />} />
-          
-          {/* Selección de perfiles - NO protegida */}
+
           <Route path="/profiles" element={<PerfilSelector />} />
-          
-          {/* Añadir/Administrar perfil - NO protegida */}
+
           <Route path="/add-profile" element={<AñadirPerfil />} />
-          
-          {/* Menú de juegos - PROTEGIDA (necesita perfil) */}
-          <Route 
-            path="/menu-juegos" 
+
+          <Route
+            path="/menu-juegos"
             element={
               <ProtectedRoute>
                 <MenuPrueba />
               </ProtectedRoute>
-            } 
+            }
           />
-          
-          {/* Juegos - PROTEGIDA (necesita perfil) */}
-          <Route 
-            path="/juego/:id" 
+
+          <Route
+            path="/juego/:id"
             element={
               <ProtectedRoute>
                 <ContenedorJuego />
               </ProtectedRoute>
-            } 
+            }
           />
+
         </Routes>
       </Router>
     </PerfilProvider>

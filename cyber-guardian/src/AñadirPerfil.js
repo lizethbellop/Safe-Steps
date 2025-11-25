@@ -3,14 +3,61 @@ import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
 
 // Importar TODAS tus imágenes disponibles
-import aguijaImg from './assets/images/aguila.jpeg';
-import conejoImg from './assets/images/conejo.jpeg';
-import loboImg from './assets/images/lobo.jpeg';
-import toroImg from './assets/images/toro.jpeg';
-import tiburonImg from './assets/images/tiburon.jpeg';
-import tortugaImg from './assets/images/tortuga.jpeg';
-import dragonImg from './assets/images/dragon.jpeg';
-import gatoImg from './assets/images/gato.jpeg';
+import aguijaImg from './assets/images/fenixC.png';
+import conejoImg from './assets/images/conejoC.png';
+import loboImg from './assets/images/loboC.png';
+import toroImg from './assets/images/vacaC.png';
+import tiburonImg from './assets/images/tiburonC.png';
+import tortugaImg from './assets/images/tortugaC.png';
+import dragonImg from './assets/images/dragonC.png';
+import gatoImg from './assets/images/gatoC.png';
+import koalaImg from './assets/images/koalaC.png';
+import leonImg from './assets/images/leonC.png';
+import mariposaImg from './assets/images/mariposaC.png';
+import osoImg from './assets/images/osoC.png';
+import kirbyImg from './assets/images/kirbyC.png';
+// saludo
+import aguilaSImg from './assets/images/fenixS.png';
+import conejoSImg from './assets/images/conejoS.png';
+import loboSImg from './assets/images/perroS.png';
+import toroSImg from './assets/images/vacaS.png';
+import tiburonSImg from './assets/images/tiburonS.png';
+import tortugaSImg from './assets/images/tortugaS.png';
+import dragonSImg from './assets/images/dragonS.png';
+import gatoSImg from './assets/images/gatoS.png';
+import koalaSImg from './assets/images/koalaS.png';
+import leonSImg from './assets/images/leonS.png';
+import mariposaSImg from './assets/images/mariposaS.png';
+import osoSImg from './assets/images/osoS.png';
+import kirbySImg from './assets/images/kirbyS.png';
+// escudo
+import aguilaEsImg from './assets/images/aguilaEs.png';
+import conejoEsImg from './assets/images/conejoEs.png';
+import loboEsImg from './assets/images/loboEs.png';
+import toroEsImg from './assets/images/vacaEs.png';
+import tiburonEsImg from './assets/images/tiburonEs.png';
+import tortugaEsImg from './assets/images/tortugaEs.png';
+import dragonEsImg from './assets/images/dragonEs.png';
+import gatoEsImg from './assets/images/gatoEs.png';
+import koalaEsImg from './assets/images/koalaEs.png';
+import leonEsImg from './assets/images/leonEs.png';
+import mariposaEsImg from './assets/images/mariposaEs.png';
+import osoEsImg from './assets/images/osoEs.png';
+import kirbyEsImg from './assets/images/kirbuEs.png';
+// amigo
+import aguilaAmImg from './assets/images/aguilaAm.png';
+import conejoAmImg from './assets/images/conejoAm.png';
+import loboAmImg from './assets/images/loboAm.png';
+import toroAmImg from './assets/images/toroAm.png';
+import tiburonAmImg from './assets/images/tiburonAm.png';
+import tortugaAmImg from './assets/images/tortugaAm.png';
+import dragonAmImg from './assets/images/dragonAm.png';
+import gatoAmImg from './assets/images/gatoAm.png';
+import koalaAmImg from './assets/images/koalaAm.png';
+import leonAmImg from './assets/images/leonAm.png';
+import mariposaAmImg from './assets/images/mariposaAm.png';
+import osoAmImg from './assets/images/osoAm.png';
+import kirbyAmImg from './assets/images/kirbyAm.png';
 
 export default function AñadirPerfil() {
   const navigate = useNavigate();
@@ -22,26 +69,25 @@ export default function AñadirPerfil() {
   const [showModal, setShowModal] = useState(false);
 
   const avatars = [
-    // TODAS tus imágenes de animales
-    { id: 1, type: 'image', src: conejoImg, name: 'Conejo', color: '#9b59b6' },
-    { id: 2, type: 'image', src: loboImg, name: 'Lobo', color: '#3498db' },
-    { id: 3, type: 'image', src: toroImg, name: 'Toro', color: '#8b4513' },
-    { id: 4, type: 'image', src: aguijaImg, name: 'Águila', color: '#f39c12' },
-    { id: 5, type: 'image', src: tiburonImg, name: 'Tiburón', color: '#3498db' },
-    { id: 6, type: 'image', src: tortugaImg, name: 'Tortuga', color: '#27ae60' },
-    { id: 7, type: 'image', src: dragonImg, name: 'Dragón', color: '#e74c3c' },
-    { id: 8, type: 'image', src: gatoImg, name: 'Gato', color: '#e67e22' },
-    
-    // Emojis adicionales
-    { id: 9, emoji: '🦸‍♀️', name: 'Superheroína', color: '#e91e63' },
-    { id: 10, emoji: '🥷', name: 'Ninja', color: '#9c27b0' },
-    { id: 11, emoji: '👸', name: 'Princesa', color: '#ff69b4' },
-    { id: 12, emoji: '🧙‍♂️', name: 'Mago', color: '#3f51b5' },
-    { id: 13, emoji: '🤖', name: 'Robot', color: '#607d8b' },
-    { id: 14, emoji: '🦸‍♂️', name: 'Superhéroe', color: '#f44336' },
-    { id: 15, emoji: '🧚‍♀️', name: 'Hada', color: '#00bcd4' },
-    { id: 16, emoji: '🦄', name: 'Unicornio', color: '#e91e63' },
+    { id: 1, type: 'image', src: conejoImg, srcS:conejoSImg, srcEs:conejoEsImg, srcAm:conejoAmImg, name: 'Conejo', color: '#3b9cd8ff' }, 
+    { id: 2, type: 'image', src: loboImg, srcS:loboSImg, srcEs:loboEsImg, srcAm:loboAmImg, name: 'Lobo', color: '#90ef6dff' },   
+    { id: 3, type: 'image', src: toroImg, srcS:toroSImg, srcEs:toroEsImg, srcAm:toroAmImg, name: 'Toro', color: '#6eeceaff' },   
+    { id: 4, type: 'image', src: aguijaImg, srcS:aguilaSImg, srcEs:aguilaEsImg, srcAm:aguilaAmImg, name: 'Águila', color: '#cadbeeff' }, 
+    { id: 5, type: 'image', src: tiburonImg, srcS:tiburonSImg, srcEs:tiburonEsImg, srcAm:tiburonAmImg, name: 'Tiburón', color: '#f0acf2ff' }, 
+    { id: 6, type: 'image', src: tortugaImg, srcS:tortugaSImg, srcEs:tortugaEsImg, srcAm:tortugaAmImg, name: 'Tortuga', color: '#f7f381ff' }, 
+    { id: 7, type: 'image', src: dragonImg, srcS:dragonSImg, srcEs:dragonEsImg, srcAm:dragonAmImg, name: 'Dragón', color: '#f4b5cdff' }, 
+    { id: 8, type: 'image', src: gatoImg, srcS:gatoSImg, srcEs:gatoEsImg, srcAm:gatoAmImg, name: 'Gato', color: '#f7ceaeff' },   
+    { id: 9, type: 'image', src: koalaImg, srcS:koalaSImg, srcEs:koalaEsImg, srcAm:koalaAmImg, name: 'Koala', color: '#b9f9a7ff' },  
+    { id: 10, type: 'image', src: leonImg, srcS:leonSImg, srcEs:leonEsImg, srcAm:leonAmImg, name: 'Leon', color: '#cbfcffff' },  
+    { id: 11, type: 'image', src: mariposaImg, srcS:mariposaSImg, srcEs:mariposaEsImg, srcAm:mariposaAmImg, name: 'Mariposa', color: '#fff5bdff' }, 
+    { id: 12, type: 'image', src: osoImg, srcS:osoSImg, srcEs:osoEsImg, srcAm:osoAmImg, name: 'Oso', color: '#e1d8ffff' },    
+    { id: 13, type: 'image', src: kirbyImg, srcS:kirbySImg, srcEs:kirbyEsImg, srcAm:kirbyAmImg, name: 'Kirby', color: '#ffdcf6ff' },
   ];
+
+  const buttonHover = {
+    transform: 'scale(1.08)',
+    boxShadow: '0 6px 18px rgba(0,0,0,0.25)',
+  };
 
   const handleContinue = () => {
     if (!name.trim()) {
@@ -66,6 +112,9 @@ export default function AñadirPerfil() {
       nombre: name.trim(),
       apodo: nickname.trim(),
       avatar: avatar.src || avatar.emoji,
+      avatarSrcS: avatar.srcS,
+      avatarEs: avatar.srcEs,
+      avatarAm: avatar.srcAm,
       avatarNombre: avatar.name,
       avatarColor: avatar.color,
       modoEnfoque: false,
@@ -74,12 +123,9 @@ export default function AñadirPerfil() {
       puntosExperiencia: 0,
     };
 
-    // Guardar perfil en la lista de perfiles
     const guardadoExitoso = agregarPerfil(perfilData);
     
     if (guardadoExitoso) {
-      console.log('Perfil creado y guardado:', perfilData);
-      // ✅ Volver a la pantalla de selección de perfiles
       navigate('/profiles');
     } else {
       alert('Error al guardar el perfil. Por favor intenta de nuevo.');
@@ -103,7 +149,7 @@ export default function AñadirPerfil() {
     <div style={styles.container}>
       <div style={styles.content}>
         <h1 style={styles.title}>Añadir perfil</h1>
-        <p style={styles.subtitle}>Crea un perfil para jugar en Cyber Guardian.</p>
+        <p style={styles.subtitle}>Crea un perfil para jugar en Safe Steps.</p>
 
         <div style={styles.formContainer}>
           {/* Avatar Selection */}
@@ -176,10 +222,27 @@ export default function AñadirPerfil() {
 
         {/* Action Buttons */}
         <div style={styles.buttonContainer}>
-          <button style={styles.continueButton} onClick={handleContinue}>
+          <button
+            style={styles.continueButton}
+            onClick={handleContinue}
+            onMouseEnter={(e) => Object.assign(e.target.style, buttonHover)}
+            onMouseLeave={(e) => {
+              e.target.style.transform = styles.continueButton.transform || "scale(1)";
+              e.target.style.boxShadow = styles.continueButton.boxShadow;
+            }}
+          >
             Continuar
           </button>
-          <button style={styles.cancelButton} onClick={handleCancel}>
+
+          <button
+            style={styles.cancelButton}
+            onClick={handleCancel}
+            onMouseEnter={(e) => Object.assign(e.target.style, buttonHover)}
+            onMouseLeave={(e) => {
+              e.target.style.transform = styles.cancelButton.transform || "scale(1)";
+              e.target.style.boxShadow = styles.cancelButton.boxShadow;
+            }}
+          >
             Cancelar
           </button>
         </div>
@@ -229,7 +292,7 @@ export default function AñadirPerfil() {
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+    background: 'linear-gradient(145deg, #ffac5eff 0%, #ff7f1eff 50%, #ae19d7ff 100%)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -248,11 +311,11 @@ const styles = {
   },
   subtitle: {
     fontSize: '1.2rem',
-    color: '#a0a0a0',
+    color: '#ffffffff',
     marginBottom: '40px',
   },
   formContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(27, 19, 19, 0.06)',
     borderRadius: '10px',
     padding: '40px',
     marginBottom: '30px',
@@ -281,7 +344,7 @@ const styles = {
     width: '150px',
     height: '150px',
     borderRadius: '10px',
-    backgroundColor: '#2a2a3e',
+    backgroundColor: '#2a0747ff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -290,7 +353,7 @@ const styles = {
   },
   placeholderText: {
     fontSize: '4rem',
-    color: 'rgba(255, 255, 255, 0.3)',
+    color: 'rgba(255, 255, 255, 1)',
   },
   selectedAvatarEmoji: {
     fontSize: '5rem',
@@ -305,9 +368,9 @@ const styles = {
   chooseAvatarButton: {
     padding: '12px 24px',
     fontSize: '1rem',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(146, 137, 137, 0.5)',
     color: 'white',
-    border: '2px solid rgba(255, 255, 255, 0.3)',
+    border: '2px solid rgba(255, 255, 255, 0.14)',
     borderRadius: '5px',
     cursor: 'pointer',
     transition: 'all 0.3s',
@@ -318,16 +381,16 @@ const styles = {
   },
   label: {
     display: 'block',
-    color: '#a0a0a0',
-    fontSize: '0.9rem',
+    color: '#ffffffff',
+    fontSize: '1 rem',
     marginBottom: '8px',
   },
   input: {
     width: '100%',
     padding: '15px',
     fontSize: '1.1rem',
-    backgroundColor: '#555',
-    color: 'white',
+    backgroundColor: '#ffffffff',
+    color: 'black',
     border: 'none',
     borderRadius: '5px',
     outline: 'none',
@@ -337,27 +400,31 @@ const styles = {
     gap: '20px',
   },
   continueButton: {
-    padding: '15px 40px',
-    fontSize: '1.2rem',
-    backgroundColor: 'white',
-    color: '#1a1a2e',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    transition: 'transform 0.2s',
-    flex: 1,
+      padding: '15px 40px',
+      fontSize: '1.2rem',
+      background: 'linear-gradient(135deg, #7cdafcff, #1f87ccff)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '50px',     // ← MÁS REDONDEADO
+      cursor: 'pointer',
+      fontWeight: '700',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      transition: 'all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      flex: 1,
+      margin: 0,                // ← SIN MARGEN
   },
   cancelButton: {
-    padding: '15px 40px',
-    fontSize: '1.2rem',
-    backgroundColor: 'transparent',
-    color: 'white',
-    border: '2px solid rgba(255, 255, 255, 0.6)',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
-    transition: 'all 0.3s',
+      padding: '15px 40px',
+      fontSize: '1.2rem',
+      background: 'linear-gradient(135deg, #ff8064ff, #d91031ff)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '50px',      // ← MÁS REDONDEADO
+      cursor: 'pointer',
+      fontWeight: '700',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      transition: 'all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      margin: 0,                 // ← SIN MARGEN
   },
   modal: {
     position: 'fixed',
@@ -377,7 +444,7 @@ const styles = {
     borderRadius: '15px',
     maxWidth: '700px',
     width: '90%',
-    maxHeight: '80vh',
+    maxHeight: '90vh',
     overflowY: 'auto',
   },
   modalTitle: {
