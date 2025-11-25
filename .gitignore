@@ -47,3 +47,73 @@ lerna-debug.log*
 .parcel-cache/
 .eslintcache
 cyber-guardian/env
+
+# Xcode
+#
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+
+# Swift Package Manager
+#
+.build/
+Packages/
+.swiftpm/
+Package.resolved
+
+# CocoaPods
+#
+Pods/
+Podfile.lock
+
+# Carthage
+#
+Carthage/Build/
+
+# Accesibilidad de Playground
+#
+timeline.xctimeline
+playground.xcworkspace
+
+# Archivos temporales
+#
+*.swp
+*.lock
+*.DS_Store
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Archivos de logs
+#
+*.log
+
+# Archivos de test coverage
+#
+*.xccovreport
+*.xccovarchive
+
+# Fastlane
+#
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/readme.md
+
+# Archivos con secretos
+Secrets.swift
+
