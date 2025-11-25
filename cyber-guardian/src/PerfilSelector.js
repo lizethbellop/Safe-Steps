@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
 import logo from './assets/images/logo.png';   // ⬅️ Aquí importas tu logo
+import ManageProfiles from './ManageProfiles';
 
 export default function ProfileSelector() {
   const navigate = useNavigate();

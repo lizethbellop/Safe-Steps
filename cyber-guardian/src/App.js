@@ -7,6 +7,7 @@ import ContenedorJuego from './ContenedorJuego';
 import MenuPrueba from './MenuPrueba';
 import PerfilSelector from './PerfilSelector';
 import AñadirPerfil from './AñadirPerfil';
+import ManageProfiles from './ManageProfiles';
 
 // Ruta protegida
 function ProtectedRoute({ children }) {
@@ -66,6 +67,8 @@ function App() {
           <Route path="/profiles" element={<PerfilSelector />} />
 
           <Route path="/add-profile" element={<AñadirPerfil />} />
+
+          <Route path="/manage-profiles" element={<ManageProfiles />} />
 
           <Route
             path="/menu-juegos"
