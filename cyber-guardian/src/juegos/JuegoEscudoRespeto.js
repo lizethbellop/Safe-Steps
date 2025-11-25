@@ -13,9 +13,8 @@ const GAME_CONSTANTS = {
 };
 
 const JuegoEscudoRespeto = () => {
-  const { perfilActivo, actualizarPuntos } = usePerfil();
+  const { perfilActivo, actualizarPuntos} = usePerfil();
   const navigate = useNavigate();
-
   const [gameState, setGameState] = useState('intro');
   const [currentScenario, setCurrentScenario] = useState(null);
   const [scenarioCount, setScenarioCount] = useState(0);

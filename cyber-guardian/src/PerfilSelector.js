@@ -100,12 +100,12 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '20px',
+    padding: '10px',
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   content: {
     textAlign: 'center',
-    maxWidth: '1200px',
+    maxWidth: '900px',
     width: '100%',
   },
 

@@ -347,7 +347,7 @@ Responde SOLO con este JSON (sin markdown):
             <Shield size={50} color="#fff" />
           </div>
           
-          <h1 style={styles.introTitle}>Lluvia de Datos</h1>
+          <h1 style={styles.introTitle}>Tesoro de privacidad</h1>
           <p style={styles.introSubtitle}>
             Aprende a proteger tu información personal en internet
           </p>
@@ -616,7 +616,7 @@ Responde SOLO con este JSON (sin markdown):
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, #ffeb3aff 0%, #ffa220ff 100%)',
     padding: '20px',
     fontFamily: "'Poppins', sans-serif",
     display: 'flex',
@@ -625,7 +625,7 @@ const styles = {
   },
   loadingContainer: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, #fff767ff 0%, #ffd437ff 100%)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -818,7 +818,7 @@ const styles = {
   // Juego
   gameContainer: {
     minHeight: '100vh',
-    background: '#1f2937',
+    background: '#e2a200ff',
     padding: '20px',
     fontFamily: "'Poppins', sans-serif"
   },
