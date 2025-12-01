@@ -21,36 +21,30 @@ const Configuracion = () => {
     actualizarPerfil 
   } = usePerfil();
 
-  // 🚨 Si el perfil aún no carga, no renderizamos nada
   if (!perfilActivo) return null; 
 
-
-  // Estados locales
   const [avatarSeleccionado, setAvatarSeleccionado] = useState(perfilActivo?.avatar || 'conejo');
   const [modoEnfoque, setModoEnfoque] = useState(perfilActivo?.modoEnfoque || false);
   const [volumenSonido, setVolumenSonido] = useState(perfilActivo?.volumenSonido || 50);
   const [volumenMusica, setVolumenMusica] = useState(perfilActivo?.volumenMusica || 50);
   const [musicaPreferida, setMusicaPreferida] = useState(perfilActivo?.musicaPreferida || 'jazz');
 
-  // Avatares disponibles (ACTUALIZADOS con status de desbloqueo)
+  // Avatares disponibles 
   const avatares = [
     { id: 'conejo', nombre: 'Conejo', sprite: conejoSprite, emoji: '🐇', desbloqueado: true },
     { id: 'lobo', nombre: 'Lobo', sprite: loboSprite, emoji: '🐺', desbloqueado: true },
     { id: 'tiburon', nombre: 'Tiburón', sprite: tiburonSprite, emoji: '🦈', desbloqueado: true },
     { id: 'toro', nombre: 'Toro', sprite: toroSprite, emoji: '🐂', desbloqueado: true },
     { id: 'tortuga', nombre: 'Tortuga', sprite: tortugaSprite, emoji: '🐢', desbloqueado: true },
-    // Avatares Bloqueados (NUEVOS)
     { id: 'aguila', nombre: 'Águila', sprite: aguilaSprite, emoji: '🦅', desbloqueado: perfilActivo.puntos >= PUNTAJE_DESBLOQUEO },
     { id: 'dragon', nombre: 'Dragón', sprite: dragonSprite, emoji: '🐉', desbloqueado: perfilActivo.puntos >= PUNTAJE_DESBLOQUEO },
   ];
 
-  // Opciones de música
   const opcionesMusica = [
     { id: 'jazz', nombre: 'Jazz Suave', emoji: '🎷' },
     { id: 'cristhians', nombre: 'Ritmos Pop', emoji: '🎤' }
   ];
 
-  // Efecto para control sensorial (bloquea audio si modoEnfoque es true)
   useEffect(() => {
     if (modoEnfoque) {
       setVolumenSonido(0);
@@ -58,7 +52,7 @@ const Configuracion = () => {
     } 
   }, [modoEnfoque]);
 
-  // Función para manejar la selección del avatar
+  // Nanejo de avatar
   const handleSelectAvatar = (avatar) => {
     if (avatar.desbloqueado) {
       setAvatarSeleccionado(avatar.id);
@@ -67,7 +61,6 @@ const Configuracion = () => {
     }
   };
 
-  // Guardar cambios: Lógica de guardado funcional
   const guardarCambios = () => {
     actualizarPerfil({
       avatar: avatarSeleccionado,
@@ -76,21 +69,18 @@ const Configuracion = () => {
       volumenMusica: modoEnfoque ? 0 : volumenMusica,
       musicaPreferida: musicaPreferida
     });
-    
-    // Feedback Claro
     alert('✅ Configuración guardada correctamente');
     navigate('/menu-juegos');
   };
 
   const avatarActual = avatares.find(a => a.id === avatarSeleccionado);
   
-
   return (
     <div style={styles.container}>
       <h1 style={styles.titulo}>⚙️ Configuración del Perfil ({perfilActivo.nombre})</h1>
 
       <div style={styles.contenido}>
-        {/* LADO IZQUIERDO: Avatar */}
+        {/* LADO IZQUIERDO */}
         <div style={styles.ladoIzquierdo}>
           <h2 style={styles.subtitulo}>Mi Avatar (Puntos: {perfilActivo.puntos || 0})</h2>
           
@@ -101,11 +91,9 @@ const Configuracion = () => {
                 key={avatar.id}
                 style={{
                   ...styles.tarjetaAvatar,
-                  // Estilo para seleccionado
                   border: avatarSeleccionado === avatar.id 
                     ? '4px solid #3b82f6' 
                     : '2px solid #ddd',
-                  // Opacidad para Bloqueado
                   opacity: avatar.desbloqueado ? 1 : 0.5,
                   position: 'relative'
                 }}
@@ -120,7 +108,7 @@ const Configuracion = () => {
             ))}
           </div>
 
-          {/* Avatar grande seleccionado */}
+          {/* Avatar grande */}
           <div style={{...styles.avatarGrande, border: '3px solid #3b82f6'}}>
             <img
               src={avatarActual.sprite}
@@ -138,7 +126,6 @@ const Configuracion = () => {
           {/* Modo Enfoque (TEA) */}
           <div style={{...styles.seccionConfig, backgroundColor: modoEnfoque ? '#e6f7ff' : '#fff'}}>
             <h3 style={styles.tituloSeccion}><Eye style={{marginRight: 5}} size={20} /> Modo Enfoque (TEA)</h3>
-            {/* SWITCH MEJORADO */}
             <label style={styles.switchContainer}>
               <input
                 type="checkbox"
@@ -248,11 +235,10 @@ const Configuracion = () => {
   );
 };
 
-// ... (Estilos se mantienen del código anterior para el switch y colores) ...
 const styles = {
   container: {
     minHeight: '100vh',
-    background: '#E0F7FA', // Color de fondo más calmado
+    background: '#E0F7FA',
     padding: '40px 20px',
     fontFamily: "'Poppins', sans-serif"
   },
@@ -291,7 +277,7 @@ const styles = {
   },
   gridAvatares: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)', // Acomodamos 6 avatares en 2 filas
+    gridTemplateColumns: 'repeat(3, 1fr)', 
     gap: '15px',
     marginBottom: '30px'
   },

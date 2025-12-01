@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext'; 
 
-// Importar TODAS tus imágenes disponibles (Necesarias para el modal y la selección)
 import aguijaImg from './assets/images/fenixC.png';
 import conejoImg from './assets/images/conejoC.png';
 import loboImg from './assets/images/loboC.png';
@@ -60,7 +59,7 @@ import osoAmImg from './assets/images/osoAm.png';
 import kirbyAmImg from './assets/images/kirbyAm.png';
 
 
-// Definición de avatares (copiado de AñadirPerfil para consistencia)
+// Definición de avatares 
 const avatars = [
     { id: 1, type: 'image', src: conejoImg, srcS:conejoSImg, srcEs:conejoEsImg, srcAm:conejoAmImg, name: 'Conejo', color: '#3b9cd8ff' }, 
     { id: 2, type: 'image', src: loboImg, srcS:loboSImg, srcEs:loboEsImg, srcAm:loboAmImg, name: 'Lobo', color: '#90ef6dff' },   
@@ -81,31 +80,23 @@ export default function ManageProfiles() {
     const navigate = useNavigate();
     const { perfilesGuardados, editarPerfil, eliminarPerfil } = usePerfil();
 
-    // Estado para el perfil que está siendo editado
     const [perfilSeleccionado, setPerfilSeleccionado] = useState(null);
-    
-    // Estados para los datos del formulario
     const [nombreInput, setNombreInput] = useState('');
     const [apodoInput, setApodoInput] = useState('');
-    
-    // Estado para gestionar el cambio de avatar ANTES de guardar
     const [newSelectedAvatarId, setNewSelectedAvatarId] = useState(null);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
 
-    // Seleccionar el primer perfil y sincronizar inputs al cargar o cambiar de lista
     useEffect(() => {
         if (!perfilSeleccionado && perfilesGuardados.length > 0) {
             setPerfilSeleccionado(perfilesGuardados[0]);
         }
     }, [perfilesGuardados]);
 
-    // Sincronizar inputs y resetear selección de avatar cuando cambia el perfil
     useEffect(() => {
         if (perfilSeleccionado) {
             setNombreInput(perfilSeleccionado.nombre);
             setApodoInput(perfilSeleccionado.apodo || '');
             
-            // Determinar el ID del avatar actual para precargar en el modal
             const currentAvatarData = avatars.find(a => a.src === perfilSeleccionado.avatar);
             setNewSelectedAvatarId(currentAvatarData ? currentAvatarData.id : null);
         } else {
@@ -115,28 +106,24 @@ export default function ManageProfiles() {
         }
     }, [perfilSeleccionado]);
 
-    // Manejador para seleccionar un perfil de la lista
+    // Seleccionar un perfil de la lista
     const handleSelectProfile = (perfil) => {
         setPerfilSeleccionado(perfil);
     };
     
-    // Manejador para la selección dentro del modal
     const handleAvatarSelect = (avatarId) => {
         setNewSelectedAvatarId(avatarId);
         setShowAvatarModal(false);
     };
 
-    // Manejador para guardar los cambios
     const handleGuardar = () => {
         if (!perfilSeleccionado) return;
 
-        // Validación
         if (!nombreInput.trim()) {
             alert('El nombre del perfil no puede estar vacío.'); 
             return;
         }
         
-        // 🟢 Aseguramos que editarPerfil exista
         if (typeof editarPerfil !== 'function') {
             alert("Error interno: La función de edición no está disponible.");
             return;
@@ -151,7 +138,6 @@ export default function ManageProfiles() {
             ...perfilSeleccionado,
             nombre: nombreInput.trim(),
             apodo: apodoInput.trim(),
-            // Actualizar el avatar y color si se seleccionó uno nuevo
             ...(newAvatarData && {
                 avatar: newAvatarData.src,
                 avatarColor: newAvatarData.color,
@@ -172,12 +158,11 @@ export default function ManageProfiles() {
         }
     };
 
-    // Manejador para cancelar la edición
+    // Cancelar la edición
     const handleCancelar = () => {
-        navigate('/profiles'); // Volver a la pantalla de selección de perfiles
+        navigate('/profiles'); 
     };
     
-    // Manejador para eliminar el perfil
     const handleEliminar = () => {
         if (!perfilSeleccionado) return;
         
@@ -186,14 +171,13 @@ export default function ManageProfiles() {
             
             if (eliminacionExitosa) {
                 console.log(`Perfil de ${perfilSeleccionado.nombre} eliminado.`);
-                setPerfilSeleccionado(null); // Deseleccionar
+                setPerfilSeleccionado(null); 
             } else {
                 console.error('Error al eliminar el perfil.');
             }
         }
     };
 
-    // Obtener los datos del avatar que se muestran actualmente (incluyendo la preselección del modal)
     const avatarDataToShow = newSelectedAvatarId 
         ? avatars.find(a => a.id === newSelectedAvatarId)
         : perfilSeleccionado ? avatars.find(a => a.src === perfilSeleccionado.avatar) : null;
@@ -231,7 +215,7 @@ export default function ManageProfiles() {
                                         }}
                                     >
                                         <img 
-                                            src={perfil.avatar} // Usamos la URL guardada del perfil
+                                            src={perfil.avatar} 
                                             alt={perfil.nombre}
                                             style={styles.avatarImageMini}
                                         />
@@ -243,8 +227,7 @@ export default function ManageProfiles() {
                                 </div>
                             ))}
                         </div>
-                        
-                        {/* Espacio azul en la parte inferior */}
+
                         <div style={styles.blueSpace}></div>
                     </div>
                     
@@ -253,7 +236,6 @@ export default function ManageProfiles() {
                         
                         {perfilSeleccionado ? (
                             <>
-                                {/* Avatar grande y botón de edición */}
                                 <div style={styles.avatarSection}>
                                     <div
                                         style={{
@@ -264,7 +246,7 @@ export default function ManageProfiles() {
                                         }}
                                     >
                                         <img 
-                                            src={finalAvatarSrc} // Usamos la imagen del avatar seleccionado o el nuevo
+                                            src={finalAvatarSrc}
                                             alt={perfilSeleccionado.nombre}
                                             style={styles.avatarImageBig}
                                         />
@@ -372,9 +354,7 @@ export default function ManageProfiles() {
 
 // Estilos
 const styles = {
-    // Heredados del ProfileSelector y ajustados para no sobrepasar la pantalla
     container: {
-        // Usamos 100vh, asumiendo que el App.css global corregirá el desbordamiento.
         height: '100vh', 
         background: 'linear-gradient(135deg, #0c0077ff 0%, #7152b3ff 50%, #fb9b1dff 100%)',
         display: 'flex',
@@ -538,14 +518,11 @@ const styles = {
         boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
         zIndex: 10,
         transition: 'transform 0.2s',
-        // Nota: Los pseudo-selectores como '&:hover' solo funcionan con librerías como styled-components o Emotion.
-        // Aquí los dejamos como referencia, pero se recomienda usar CSS externo o JS para el hover.
         '&:hover': {
             transform: 'scale(1.1)',
         }
     },
 
-    // Campos de Input (sin cambios significativos)
     inputGroup: {
         display: 'flex',
         alignItems: 'center',
@@ -570,7 +547,6 @@ const styles = {
         boxSizing: 'border-box',
     },
 
-    // 🌟 ESTILOS DE BOTONES BONITOS Y FUNCIONALES 🌟
     buttonGroup: {
         display: 'flex',
         justifyContent: 'flex-end',
@@ -583,10 +559,10 @@ const styles = {
     guardarButton: {
         padding: '10px 30px',
         fontSize: '1rem',
-        background: 'linear-gradient(135deg, #4fa8c8ff, #0439b6ff)', // Gradiente del botón ADMINISTRAR PERFILES
+        background: 'linear-gradient(135deg, #4fa8c8ff, #0439b6ff)', 
         color: 'white',
         border: 'none',
-        borderRadius: '50px', // Más redondeado
+        borderRadius: '50px', 
         cursor: 'pointer',
         fontWeight: '700',
         boxShadow: '0 4px 10px rgba(40, 4, 111, 0.4)',
@@ -598,7 +574,7 @@ const styles = {
         background: 'linear-gradient(135deg, #ffcf70ff, #eb7f03ff)',
         color: 'white',
         border: 'none',
-        borderRadius: '50px', // Más redondeado
+        borderRadius: '50px', 
         cursor: 'pointer',
         fontWeight: '700',
         boxShadow: '0 4px 10px rgba(162, 162, 162, 0.4)',
@@ -607,17 +583,16 @@ const styles = {
     deleteButton: {
         padding: '10px 30px',
         fontSize: '1rem',
-        backgroundColor: '#dc3545', // Rojo para eliminar
+        backgroundColor: '#dc3545', 
         color: 'white',
         border: 'none',
-        borderRadius: '50px', // Más redondeado
+        borderRadius: '50px',
         cursor: 'pointer',
         fontWeight: '700',
         marginRight: 'auto',
         boxShadow: '0 4px 10px rgba(220, 53, 69, 0.4)',
         transition: 'all 0.25s',
     },
-    // Estilos del Modal... 
     modal: {
         position: 'fixed',
         top: 0,

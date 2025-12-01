@@ -9,7 +9,6 @@ import PerfilSelector from './PerfilSelector';
 import AñadirPerfil from './AñadirPerfil';
 import ManageProfiles from './ManageProfiles';
 
-// Ruta protegida
 function ProtectedRoute({ children }) {
   const { perfilActivo, cargando } = usePerfil();
 
@@ -36,7 +35,6 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-// Menú principal SOLO con el botón arcade
 function MenuPrincipal() {
   const navigate = useNavigate();
 

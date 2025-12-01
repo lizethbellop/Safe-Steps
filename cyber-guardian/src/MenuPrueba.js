@@ -17,7 +17,7 @@ const styles = {
     overflow: 'hidden',
   },
 
-  // --- COLUMNA IZQUIERDA (Sidebar) ---
+  // --- COLUMNA IZQUIERDA  ---
   columnaIzquierda: {
     width: '340px',
     backgroundColor: '#FFFFFF',
@@ -27,7 +27,6 @@ const styles = {
     boxShadow: '5px 0 25px rgba(0,0,0,0.05)', 
     transition: 'background-color 0.3s ease'
   },
-
   infoUsuario: {
     padding: '40px 20px',
     display: 'flex',
@@ -36,43 +35,90 @@ const styles = {
     borderBottom: '1px solid #eee',
     transition: 'background 0.3s ease'
   },
-
   imagenPerfil: {
-    width: '110px', height: '110px', objectFit: 'cover', borderRadius: '50%', marginBottom: '15px', border: '4px solid white', boxShadow: '0 8px 20px rgba(0,0,0,0.1)', objectPosition: 'center top',
-  },
-  
+    width: '110px', 
+    height: '110px', 
+    objectFit: 'cover', 
+    borderRadius: '50%', 
+    marginBottom: '15px', 
+    border: '4px solid white', 
+    boxShadow: '0 8px 20px rgba(0,0,0,0.1)', 
+    objectPosition: 'center top',
+  }, 
   placeholderImagen: {
-    width: '110px', height: '110px', backgroundColor: '#f0f2f5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', color: '#cbd5e0', fontWeight: 'bold', fontSize: '14px',
+    width: '110px', 
+    height: '110px', 
+    backgroundColor: '#f0f2f5', 
+    borderRadius: '50%', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    marginBottom: '15px', 
+    color: '#cbd5e0', 
+    fontWeight: 'bold', 
+    fontSize: '14px',
   },
-
-  datosUsuario: { textAlign: 'center' },
-  nombreUsuario: { fontSize: '22px', fontWeight: '800', letterSpacing: '-0.5px' },
-  apodoUsuario: { fontSize: '15px', fontWeight: '500' },
-
-  // Toggle
+  datosUsuario: { 
+    textAlign: 'center' 
+  },
+  nombreUsuario: { 
+    fontSize: '22px', 
+    fontWeight: '800', 
+    letterSpacing: '-0.5px' 
+  },
+  apodoUsuario: { 
+    fontSize: '15px', 
+    fontWeight: '500' 
+  },
   contenedorModo: {
-    marginTop: '20px', padding: '8px 16px', borderRadius: '30px', transition: 'all 0.3s ease',
+    marginTop: '20px', 
+    padding: '8px 16px', 
+    borderRadius: '30px', 
+    transition: 'all 0.3s ease',
   },
   labelModo: {
-    display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: '#ffffffff', fontSize: '17px', fontWeight: '600',
+    display: "flex", 
+    alignItems: "center", 
+    gap: "10px", 
+    cursor: "pointer", 
+    color: '#ffffffff', 
+    fontSize: '17px', 
+    fontWeight: '600',
   },
-  checkbox: { cursor: 'pointer', accentColor: '#4299e1' },
-
-  // Lista
+  checkbox: { 
+    cursor: 'pointer', 
+    accentColor: '#4299e1' 
+  },
   listaJuegos: {
-    flex: 1, flexDirection: 'column', overflowY: 'auto', padding: '20px',
+    flex: 1, 
+    flexDirection: 'column', 
+    overflowY: 'auto', 
+    padding: '20px',
   },
-  
-  // Footer
   pieLateral: {
-    height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTop: '1px solid #ffdc9aff', background: '#fafbfc',
+    height: '100px', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    borderTop: '1px solid #ffdc9aff', 
+    background: '#fafbfc',
   },
   circulo: {
-    width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#e4fffdff', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #edf2f7', boxShadow: '0 4px 12px rgba(0,0,0,.8)', transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 
+    width: '60px', 
+    height: '60px', 
+    borderRadius: '50%', 
+    backgroundColor: '#e4fffdff', 
+    color: '#e53e3e', 
+    cursor: 'pointer', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    border: '2px solid #edf2f7', 
+    boxShadow: '0 4px 12px rgba(0,0,0,.8)', 
+    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 
   },
 };
 
-// Función para resaltar palabras clave
 const highlightKeywords = (text, keywords, color) => {
   if (!keywords || !text) return text;
   
@@ -192,10 +238,7 @@ function MenuPrueba() {
     }
   };
 
-  // LÓGICA: Seleccionar tema
   const temaActual = modoEnfoque ? juegoSeleccionado.focusTheme : juegoSeleccionado.theme;
-
-  // Variables dinámicas para Sidebar
   const bgHeaderSidebar = modoEnfoque ? '#209589ff' : 'linear-gradient(to bottom, #2ae4fdff 0%, #f8f9fa 100%)';
   const colorTextoSidebar = modoEnfoque ? '#ffffff' : '#2d3748';
   const bgToggle = modoEnfoque ? '#05573cff' : '#ffcc00ff';
@@ -217,7 +260,7 @@ function MenuPrueba() {
         ::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
       `}</style>
 
-      {/* === IZQUIERDA === */}
+      {/* IZQUIERDA */}
       <div style={{...styles.columnaIzquierda, backgroundColor: modoEnfoque ? '#f5f5f5' : '#FFFFFF'}}>
         
         <div style={{...styles.infoUsuario, background: bgHeaderSidebar}}>
@@ -280,12 +323,10 @@ function MenuPrueba() {
                   src={juego.icono} 
                   alt="icono"
                   style={{
-                    // REVERSIÓN DE TAMAÑO: 55px x 55px
                     width: '70px', 
                     height: '70px',
                     objectFit: 'contain',
                     alignSelf: 'flex-end',
-                    // REVERSIÓN DE MARGEN: -15px (ajuste original para el tamaño 55px)
                     marginBottom: '-30px', 
                     marginRight: '-10px',
                     filter: isSelected ? (modoEnfoque ? 'none' : 'drop-shadow(0 4px 4px rgba(0,0,0,0.2))') : 'grayscale(20%) opacity(0.8)',
@@ -309,15 +350,13 @@ function MenuPrueba() {
         </div>
       </div>
 
-      {/* === DERECHA (Contenido) === */}
+      {/*  DERECHA (Contenido) */}
       <div style={{
         flex: 1, padding: '50px', display: 'flex', flexDirection: 'column', position: 'relative',
         background: temaActual.bgGradient, 
         overflow: 'hidden', 
         transition: 'background 0.5s ease'
       }}>
-        
-        {/* IMAGEN DE FONDO FLOTANTE (A la DERECHA) */}
         <img 
           src={juegoSeleccionado.fondo} 
           alt="Fondo juego"
@@ -331,7 +370,6 @@ function MenuPrueba() {
             mixBlendMode: modoEnfoque ? 'normal' : 'multiply', 
             pointerEvents: 'none', 
             
-            // LÓGICA: Si modoEnfoque es true, animación 'none', si no, flota.
             animation: modoEnfoque ? 'none' : 'flotarImagen 6s ease-in-out infinite',
             transition: 'all 0.5s ease'
           }}
@@ -340,7 +378,7 @@ function MenuPrueba() {
         {/* CONTENEDOR DE TEXTO */}
         <div style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
 
-          {/* === TÍTULO (A la Derecha) === */}
+          {/* TÍTULO */}
           <div style={{
             alignSelf: 'flex-end', marginRight: '-50px',  
             background: modoEnfoque ? '#fff' : 'rgba(255, 255, 255, 0.6)', 
@@ -362,10 +400,7 @@ function MenuPrueba() {
 
           {/* Cuerpo */}
           <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
-            {/* TEXTO A LA IZQUIERDA */}
             <div style={{ flex: 1, maxWidth: '50%', paddingRight: '20px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
-              
-              {/* Descripción */}
               <p style={{ 
                 fontSize: '22px', 
                 lineHeight: '1.6', 
@@ -373,7 +408,6 @@ function MenuPrueba() {
                 fontWeight: '500',
                 textShadow: modoEnfoque ? 'none' : '0 1px 0 rgba(255,255,255,0.5)' 
               }}>
-                {/* LÓGICA CLAVE: Resaltar palabras si modoEnfoque es ON */}
                 {modoEnfoque 
                     ? highlightKeywords(
                         juegoSeleccionado.descripcion, 
@@ -383,8 +417,6 @@ function MenuPrueba() {
                     : juegoSeleccionado.descripcion
                 }
               </p>
-
-              {/* Objetivo */}
               <div style={{
                 background: modoEnfoque ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)',
                 padding: '20px',
@@ -403,10 +435,8 @@ function MenuPrueba() {
                   {juegoSeleccionado.objetivo}
                 </div>
               </div>
-
             </div>
-            
-            {/* Espacio vacío a la derecha */}
+          
             <div style={{ flex: 1 }}></div>
           </div>
 
@@ -438,7 +468,7 @@ function MenuPrueba() {
             </button>
           </div>
           
-        </div> {/* Fin contenedor contenido */}
+        </div> 
 
       </div>
     </div>

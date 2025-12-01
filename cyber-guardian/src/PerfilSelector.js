@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
-import logo from './assets/images/logo.png';   // ⬅️ Aquí importas tu logo
+import logo from './assets/images/logo.png';   
 import ManageProfiles from './ManageProfiles';
 
 export default function ProfileSelector() {
@@ -108,15 +108,12 @@ const styles = {
     maxWidth: '900px',
     width: '100%',
   },
-
-  /* ⭐ NUEVO: ESTILO DEL LOGO ⭐ */
   logo: {
     width: '180px',
     height: 'auto',
     marginBottom: '20px',
     filter: 'drop-shadow(0px 3px 6px rgba(0,0,0,0.4))'
   },
-
   title: {
     fontSize: '3.5rem',
     color: 'white',

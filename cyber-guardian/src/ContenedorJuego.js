@@ -2,24 +2,21 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePerfil } from './PerfilContext';
 
-// Importar los tres juegos
 import JuegoTesoroPrivacidad from './juegos/JuegoTesoroPrivacidad';
 import JuegoEscudoRespeto from './juegos/JuegoEscudoRespeto';
 import JuegoAldeaAmigos from './juegos/JuegoAldeaAmigos';
 
 const ContenedorJuego = () => {
-  const { id } = useParams(); // Obtener el ID del juego de la URL
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const { perfilActivo, cargando, tieneSesion } = usePerfil();
 
-  // Redirigir si no hay sesión
   React.useEffect(() => {
     if (!cargando && !tieneSesion()) {
-      navigate('/'); // Redirigir a la página de inicio si no hay perfil
+      navigate('/'); 
     }
   }, [cargando, tieneSesion, navigate]);
 
-  // Función para obtener el componente del juego correspondiente
   const obtenerComponenteJuego = () => {
     const modoEnfoque = perfilActivo?.modoEnfoque || false;
 
@@ -60,7 +57,6 @@ const ContenedorJuego = () => {
 
   return (
     <div style={perfilActivo.modoEnfoque ? styles.containerEnfoque : styles.containerStandard}>
-      {/* 🎮 VA DIRECTO AL JUEGO - SIN VIDEO/AUDIO */}
       <div style={styles.juegoContainer}>
         {obtenerComponenteJuego()}
       </div>
