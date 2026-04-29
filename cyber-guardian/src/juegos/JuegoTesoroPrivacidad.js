@@ -26,6 +26,7 @@ const JuegoTesoroPrivacidad = () => {
   const [datosAtrapados, setDatosAtrapados] = useState(0);
   const [tiempoRestante, setTiempoRestante] = useState(120);
   const [loading, setLoading] = useState(false);
+  const [efectosFlotantes, setEfectosFlotantes] = useState([]);
   
   // Estado para los objetos generados por la IA
   const [poolObjetos, setPoolObjetos] = useState({ buenos: [], malos: [] });
@@ -258,6 +259,16 @@ Responde SOLO con este JSON (sin markdown):
               if (obj.esBueno) {
                 setPuntos(p => p + obj.puntos);
                 setDatosAtrapados(d => d + 1);
+                const idEfecto = Date.now() + Math.random();
+                setEfectosFlotantes(efectos => [...efectos, {
+                  id: idEfecto, 
+                  x: obj.x, 
+                  y: obj.y, 
+                  puntos: obj.puntos 
+                }]);
+                setTimeout(() => {
+                  setEfectosFlotantes(efectos => efectos.filter(e => e.id !== idEfecto));
+                }, 800);
               } else {
                 setVidas(v => v - 1);
               }
@@ -504,22 +515,72 @@ Responde SOLO con este JSON (sin markdown):
         {/* Área de juego */}
         <div style={{
           ...styles.areaJuego, 
-          backgroundImage: `url(${fondoJuego})`, 
-          backgroundSize: 'cover'
+          // Mantenemos el fondo transparente/bóveda si ya aplicaste la mejora anterior,
+          // o usa tu fondo original si prefieres
+          backgroundColor: 'rgba(0, 0, 0, 0.3)', 
+          border: '1px solid rgba(28, 214, 206, 0.3)',
         }}>
+          {/* ---> NUEVO: Animación CSS inyectada directamente para agilidad */}
+          <style>
+            {`
+              @keyframes floatUpAndFade {
+                0% { opacity: 1; transform: translateY(0) scale(1); }
+                50% { transform: translateY(-30px) scale(1.3); }
+                100% { opacity: 0; transform: translateY(-60px) scale(1); }
+              }
+            `}
+          </style>
+
           {objetosCayendo.map((obj) => (
             <div key={obj.id} style={{
                 ...styles.objetoCayendo,
                 left: `${obj.x}px`, 
                 top: `${obj.y}px`,
-                backgroundColor: obj.esBueno ? '#dcfce7' : '#fee2e2',
-                borderColor: obj.esBueno ? '#22c55e' : '#ef4444',
+                // ---> NUEVO: Diseño de "Tarjetas Digitales" mejorado
+                background: obj.esBueno 
+                  ? 'linear-gradient(135deg, rgba(22, 163, 74, 0.9), rgba(21, 128, 61, 0.95))' 
+                  : 'linear-gradient(135deg, rgba(220, 38, 38, 0.9), rgba(185, 28, 28, 0.95))',
+                borderColor: obj.esBueno ? '#4ade80' : '#f87171',
+                boxShadow: obj.esBueno 
+                  ? '0 10px 20px rgba(34, 197, 94, 0.4)' 
+                  : '0 10px 20px rgba(239, 68, 68, 0.4)',
               }}>
-              <span style={styles.objetoEmoji}>{obj.emoji}</span>
+              
+              <div style={{
+                background: 'rgba(255,255,255,0.2)', 
+                borderRadius: '50%', 
+                width: '40px', 
+                height: '40px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                marginBottom: '5px'
+              }}>
+                <span style={styles.objetoEmoji}>{obj.emoji}</span>
+              </div>
               <span style={{
                 ...styles.objetoTexto,
-                color: obj.esBueno ? '#166534' : '#991b1b'
+                color: 'white',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
               }}>{obj.nombre}</span>
+            </div>
+          ))}
+
+          {/* ---> NUEVO: Renderizado de los números flotantes (+10) */}
+          {efectosFlotantes.map((efecto) => (
+            <div key={efecto.id} style={{
+              position: 'absolute',
+              left: `${efecto.x + 20}px`,
+              top: `${efecto.y - 20}px`,
+              color: '#4ade80',
+              fontSize: '28px',
+              fontWeight: '900',
+              textShadow: '0px 0px 10px rgba(34, 197, 94, 0.8), 2px 2px 0px #000',
+              animation: 'floatUpAndFade 0.8s ease-out forwards',
+              pointerEvents: 'none',
+              zIndex: 10
+            }}>
+              +{efecto.puntos}
             </div>
           ))}
 
@@ -616,7 +677,11 @@ Responde SOLO con este JSON (sin markdown):
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #ffeb3aff 0%, #ffa220ff 100%)',
+    // Fondo Bóveda Digital para el menú/intro
+    backgroundColor: '#0b132b',
+    backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(28, 214, 206, 0.15) 0%, transparent 60%), linear-gradient(rgba(28, 214, 206, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(28, 214, 206, 0.05) 1px, transparent 1px)',
+    backgroundSize: '100% 100%, 40px 40px, 40px 40px',
+    backgroundPosition: 'center center',
     padding: '20px',
     fontFamily: "'Poppins', sans-serif",
     display: 'flex',
@@ -625,7 +690,7 @@ const styles = {
   },
   loadingContainer: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #fff767ff 0%, #ffd437ff 100%)',
+    backgroundColor: '#0b132b',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -644,11 +709,11 @@ const styles = {
     padding: '30px',
     maxWidth: '500px',
     width: '100%',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
     textAlign: 'center'
   },
   introIconContainer: {
-    background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+    background: 'linear-gradient(135deg, #1CD6CE 0%, #0b132b 100%)', // Adaptado al tema de seguridad
     width: '80px',
     height: '80px',
     borderRadius: '50%',
@@ -656,7 +721,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     margin: '0 auto 20px',
-    boxShadow: '0 10px 30px rgba(76,175,80,0.4)'
+    boxShadow: '0 10px 30px rgba(28, 214, 206, 0.4)'
   },
   introTitle: {
     fontSize: '28px',
@@ -747,7 +812,7 @@ const styles = {
     color: '#6b7280'
   },
   startButton: {
-    background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+    background: 'linear-gradient(135deg, #1CD6CE 0%, #089b95 100%)', // Botón tema seguridad
     color: 'white',
     fontSize: '18px',
     fontWeight: 'bold',
@@ -756,7 +821,7 @@ const styles = {
     borderRadius: '15px',
     cursor: 'pointer',
     width: '100%',
-    boxShadow: '0 4px 15px rgba(76,175,80,0.4)'
+    boxShadow: '0 4px 15px rgba(28, 214, 206, 0.4)'
   },
   
   // Selección
@@ -766,7 +831,7 @@ const styles = {
     padding: '30px',
     maxWidth: '500px',
     width: '100%',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
     textAlign: 'center'
   },
   seleccionTitle: {
@@ -808,7 +873,7 @@ const styles = {
   },
   backButton: {
     background: 'transparent',
-    color: '#6b7280',
+    color: 'white', // Ajustado a blanco para que se vea sobre el fondo oscuro
     fontSize: '14px',
     padding: '10px',
     border: 'none',
@@ -818,7 +883,11 @@ const styles = {
   // Juego
   gameContainer: {
     minHeight: '100vh',
-    background: '#e2a200ff',
+    // Fondo Bóveda Digital principal
+    backgroundColor: '#0b132b',
+    backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(28, 214, 206, 0.15) 0%, transparent 60%), linear-gradient(rgba(28, 214, 206, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(28, 214, 206, 0.05) 1px, transparent 1px)',
+    backgroundSize: '100% 100%, 40px 40px, 40px 40px',
+    backgroundPosition: 'center center',
     padding: '20px',
     fontFamily: "'Poppins', sans-serif"
   },
@@ -831,7 +900,7 @@ const styles = {
     marginBottom: '15px',
     maxWidth: '1000px',
     margin: '0 auto 15px',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+    boxShadow: '0 4px 15px rgba(0,0,0,0.4)'
   },
   headerStat: {
     display: 'flex',
@@ -852,23 +921,24 @@ const styles = {
     maxWidth: '1000px',
     height: '650px',
     position: 'relative',
-    backgroundColor: '#87CEEB',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Cristal transparente oscuro
+    border: '1px solid rgba(28, 214, 206, 0.3)', // Borde cyber-seguridad
     borderRadius: '15px',
     overflow: 'hidden',
     margin: '0 auto',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+    boxShadow: '0 10px 30px rgba(0,0,0,0.6)'
   },
   objetoCayendo: {
     position: 'absolute',
-    width: '85px',
-    padding: '8px 5px',
-    borderRadius: '10px',
-    border: '3px solid',
+    width: '90px',
+    padding: '12px 6px',
+    borderRadius: '16px', // Más curvo
+    border: '2px solid',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     pointerEvents: 'none',
-    boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+    backdropFilter: 'blur(4px)', // Efecto cristalino
   },
   objetoEmoji: {
     fontSize: '24px'
@@ -905,7 +975,7 @@ const styles = {
     padding: '30px',
     maxWidth: '450px',
     width: '100%',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
     textAlign: 'center'
   },
   finalIcon: {
@@ -959,7 +1029,7 @@ const styles = {
     gap: '10px'
   },
   primaryButton: {
-    background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+    background: 'linear-gradient(135deg, #1CD6CE 0%, #089b95 100%)',
     color: 'white',
     fontSize: '16px',
     fontWeight: 'bold',
@@ -967,7 +1037,7 @@ const styles = {
     border: 'none',
     borderRadius: '15px',
     cursor: 'pointer',
-    boxShadow: '0 4px 15px rgba(76,175,80,0.4)'
+    boxShadow: '0 4px 15px rgba(28, 214, 206, 0.4)'
   },
   secondaryButton: {
     background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
