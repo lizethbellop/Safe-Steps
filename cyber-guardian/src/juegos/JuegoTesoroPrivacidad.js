@@ -251,9 +251,9 @@ Responde SOLO con este JSON (sin markdown):
           .filter(obj => {
             const colisiona = 
               obj.x < posicionJugador + TAMANO_JUGADOR &&
-              obj.x + 60 > posicionJugador &&
+              obj.x + 100 > posicionJugador &&
               obj.y < ALTO_JUEGO - 100 &&
-              obj.y + 60 > ALTO_JUEGO - 100 - TAMANO_JUGADOR;
+              obj.y + 100 > ALTO_JUEGO - 100 - TAMANO_JUGADOR;
 
             if (colisiona) {
               if (obj.esBueno) {
@@ -549,8 +549,8 @@ Responde SOLO con este JSON (sin markdown):
               <div style={{
                 background: 'rgba(255,255,255,0.2)', 
                 borderRadius: '50%', 
-                width: '40px', 
-                height: '40px', 
+                width: '56px', 
+                height: '56px', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
@@ -930,21 +930,21 @@ const styles = {
   },
   objetoCayendo: {
     position: 'absolute',
-    width: '90px',
-    padding: '12px 6px',
-    borderRadius: '16px', // Más curvo
+    width: '110px', /* <-- Aumentado de 90px a 110px */
+    padding: '14px 8px', /* <-- Más espacio interno */
+    borderRadius: '16px',
     border: '2px solid',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     pointerEvents: 'none',
-    backdropFilter: 'blur(4px)', // Efecto cristalino
+    backdropFilter: 'blur(4px)',
   },
   objetoEmoji: {
-    fontSize: '24px'
+    fontSize: '36px' /* <-- Aumentado de 24px a 36px */
   },
   objetoTexto: {
-    fontSize: '9px',
+    fontSize: '12px', /* <-- Aumentado de 9px a 12px (Clave para que los niños lean bien) */
     fontWeight: 'bold',
     textAlign: 'center',
     lineHeight: 1.2
