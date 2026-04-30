@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import react, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from '../PerfilContext'; 
 import { User, MapPin, FileText, Image as ImageIcon, Loader } from 'lucide-react';
