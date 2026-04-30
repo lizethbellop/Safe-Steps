@@ -4,6 +4,41 @@ import { usePerfil } from '../PerfilContext';
 import { User, MapPin, FileText, Image as ImageIcon, Loader } from 'lucide-react';
 import { AVATAR_MAPPER } from '../assets/pfps/AvatarMapper'; 
 
+// ---> NUEVO: Importaciones de los personajes "Am" (Aldea de Amigos)
+import aguilaAm from '../assets/images/aguilaAm.png';
+import conejoAm from '../assets/images/conejoAm.png';
+import dragonAm from '../assets/images/dragonAm.png';
+import gatoAm from '../assets/images/gatoAm.png';
+import kirbuAm from '../assets/images/kirbyAm.png';
+import koalaAm from '../assets/images/koalaAm.png';
+import leonAm from '../assets/images/leonAm.png';
+import loboAm from '../assets/images/loboAm.png';
+import mariposaAm from '../assets/images/mariposaAm.png';
+import osoAm from '../assets/images/osoAm.png';
+import tiburonAm from '../assets/images/tiburonAm.png';
+import tortugaAm from '../assets/images/tortugaAm.png';
+import unicornioAm from '../assets/images/unicornioAm.png';
+import vacaAm from '../assets/images/vacaS.png';
+
+// ---> NUEVO: Diccionario para mapeo rápido
+const avataresAm = {
+  aguila: aguilaAm,
+  conejo: conejoAm,
+  dragon: dragonAm,
+  gato: gatoAm,
+  kirby: kirbuAm, 
+  kirbu: kirbuAm,
+  koala: koalaAm,
+  leon: leonAm,
+  lobo: loboAm,
+  mariposa: mariposaAm,
+  oso: osoAm,
+  tiburon: tiburonAm,
+  tortuga: tortugaAm,
+  unicornio: unicornioAm,
+  vaca: vacaAm,
+};
+
 // 🎯 CONSTANTES
 const GAME_CONSTANTS = {
   NUM_PROFILES: 10,
@@ -25,6 +60,12 @@ const JuegoAldeaAmigos = () => {
   const [mostrandoResultado, setMostrandoResultado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [puntosPartida, setPuntosPartida] = useState(0);
+
+  // ---> NUEVO: Extraemos las variables clave para la Accesibilidad TDAH (Método Bulletproof)
+  const modoEnfoque = perfilActivo?.modoEnfoque || false;
+  const avatarData = perfilActivo?.avatar || 'dragon';
+  const avatarString = typeof avatarData === 'string' ? avatarData.toLowerCase() : JSON.stringify(avatarData).toLowerCase();
+  const avatarUsuario = Object.keys(avataresAm).find(animal => avatarString.includes(animal)) || 'dragon';
   
   // ✅ useRef para tracking síncrono de avatares
   const avataresUsadosRef = useRef({
@@ -456,14 +497,35 @@ Responde SOLO con este JSON:
   );
 
   return (
-    <div style={styles.container}>
-        <div style={styles.header}>
+    <div style={{...styles.container, position: 'relative'}}> {/* ---> NUEVO: position relative */}
+      
+      {/* ---> NUEVO: Personaje decorativo lateral (Solo sin Modo Enfoque) */}
+      {!modoEnfoque && (
+        <div style={{
+          position: 'absolute',
+          left: '20px',    
+          bottom: '20px',  
+          width: '200px',  // Mismo tamaño que en Escudo de Respeto
+          height: 'auto',
+          zIndex: 5,
+          pointerEvents: 'none', 
+          filter: 'drop-shadow(0px 10px 15px rgba(0,0,0,0.4))' 
+        }}>
+          <img 
+            src={avataresAm[avatarUsuario] || avataresAm['dragon']} 
+            alt="Personaje guardián"
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          />
+        </div>
+      )}
+
+        <div style={{...styles.header, zIndex: 10}}> {/* ---> NUEVO: zIndex para sobreponer */}
             <h1 style={{margin: 0, fontSize: '28px'}}>🏘️ Aldea de Amigos</h1>
             <p style={{opacity: 0.9}}>Decide quién entra a tu círculo de confianza.</p>
         </div>
 
         {gameState === 'playing' && perfilActual && (
-            <div style={styles.cardContainer}>
+            <div style={{...styles.cardContainer, zIndex: 10}}> {/* ---> NUEVO: zIndex para sobreponer */}
                 
                 {perfilActual.generadoPorIA && (
                     <div style={styles.iaBadge}>
@@ -539,7 +601,7 @@ Responde SOLO con este JSON:
         )}
 
         {gameState === 'intro' && (
-            <div style={styles.cardContainer}>
+            <div style={{...styles.cardContainer, zIndex: 10}}> {/* ---> NUEVO: zIndex para sobreponer */}
                 <h2 style={{color: '#2c3e50'}}>¡Filtra tus solicitudes!</h2>
                 <p style={{lineHeight: 1.6}}>Te llegarán solicitudes de amistad. Revisa sus fotos, descripción y edad.</p>
                 <div style={{background: '#fff3cd', padding: '15px', borderRadius: '10px', margin: '15px 0', borderLeft: '4px solid #ffc107'}}>
@@ -550,7 +612,7 @@ Responde SOLO con este JSON:
         )}
 
         {gameState === 'end' && (
-            <div style={styles.cardContainer}>
+            <div style={{...styles.cardContainer, zIndex: 10}}> {/* ---> NUEVO: zIndex para sobreponer */}
                 <h2 style={{color: '#2c3e50'}}>¡Partida Terminada!</h2>
                 <p>Aciertos: <strong>{decisionesCorrectas}</strong> / {GAME_CONSTANTS.NUM_PROFILES}</p>
                 <div style={styles.scoreBox}>
