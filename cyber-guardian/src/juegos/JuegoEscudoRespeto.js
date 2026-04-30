@@ -3,6 +3,40 @@ import { Shield, Heart, Star, CheckCircle, XCircle, Loader, AlertTriangle } from
 import { usePerfil } from '../PerfilContext';
 import { useNavigate } from 'react-router-dom';
 
+// ---> NUEVO: Importaciones de los personajes "Es" (Escudo de Respeto)
+import aguilaEs from '../assets/images/aguilaEs.png';
+import conejoEs from '../assets/images/conejoEs.png';
+import dragonEs from '../assets/images/dragonEs.png';
+import gatoEs from '../assets/images/gatoEs.png';
+import kirbuEs from '../assets/images/kirbuEs.png';
+import koalaEs from '../assets/images/koalaEs.png';
+import leonEs from '../assets/images/leonEs.png';
+import loboEs from '../assets/images/loboEs.png';
+import mariposaEs from '../assets/images/mariposaEs.png';
+import osoEs from '../assets/images/osoEs.png';
+import tiburonEs from '../assets/images/tiburonEs.png';
+import tortugaEs from '../assets/images/tortugaEs.png';
+import unicornioEs from '../assets/images/unicornioEs.png';
+import vacaEs from '../assets/images/vacaEs.png';
+
+// ---> NUEVO: Diccionario para mapeo rápido
+const avataresEs = {
+  aguila: aguilaEs,
+  conejo: conejoEs,
+  dragon: dragonEs,
+  gato: gatoEs,
+  kirby: kirbuEs,
+  koala: koalaEs,
+  leon: leonEs,
+  lobo: loboEs,
+  mariposa: mariposaEs,
+  oso: osoEs,
+  tiburon: tiburonEs,
+  tortuga: tortugaEs,
+  unicornio: unicornioEs,
+  vaca: vacaEs,
+};
+
 const GAME_CONSTANTS = {
   MAX_SCENARIOS: 5,
   INITIAL_LIVES: 3,
@@ -24,6 +58,12 @@ const JuegoEscudoRespeto = () => {
   const [feedbackData, setFeedbackData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [puntosGuardados, setPuntosGuardados] = useState(false);
+
+  // ---> NUEVO: Extraemos las variables clave para la Accesibilidad TDAH
+  const modoEnfoque = perfilActivo?.modoEnfoque || false;
+  const avatarData = perfilActivo?.avatar || 'dragon';
+  const avatarString = typeof avatarData === 'string' ? avatarData.toLowerCase() : JSON.stringify(avatarData).toLowerCase();
+  const avatarUsuario = Object.keys(avataresEs).find(animal => avatarString.includes(animal)) || 'dragon';
 
   const generateScenario = async () => {
     setLoading(true);
@@ -443,9 +483,30 @@ Responde SOLO con este JSON (sin markdown):
   if (!currentScenario) return null;
 
   return (
-    <div style={styles.container}>
+    <div style={{...styles.container, position: 'relative'}}> {/* ---> NUEVO: Añadido position: relative al contenedor principal para que el absolute del personaje funcione */}
+      
+      {/* ---> NUEVO: Personaje decorativo lateral (Solo sin Modo Enfoque) */}
+      {!modoEnfoque && (
+        <div style={{
+          position: 'absolute',
+          left: '20px',    
+          bottom: '20px',  
+          width: '300px',  // Ajusta este tamaño si lo ves muy grande o pequeño
+          height: 'auto',
+          zIndex: 5,
+          pointerEvents: 'none', 
+          filter: 'drop-shadow(0px 10px 15px rgba(0,0,0,0.4))' 
+        }}>
+          <img 
+            src={avataresEs[avatarUsuario] || avataresEs['dragon']} 
+            alt="Personaje guardián"
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          />
+        </div>
+      )}
+
       {/* Header con stats */}
-      <div style={styles.header}>
+      <div style={{...styles.header, zIndex: 10}}> {/* ---> NUEVO: zIndex 10 para asegurar que la UI quede sobre el personaje */}
         <div style={styles.livesContainer}>
           {[...Array(GAME_CONSTANTS.INITIAL_LIVES)].map((_, i) => (
             <Heart 
@@ -473,7 +534,7 @@ Responde SOLO con este JSON (sin markdown):
         </div>
       </div>
 
-      <div style={styles.card}>
+      <div style={{...styles.card, zIndex: 10}}> {/* ---> NUEVO: zIndex 10 aquí también */}
         {!showFeedback ? (
           <>
             {/* Badge del tema */}
