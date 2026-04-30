@@ -18,7 +18,7 @@ import osoAm from '../assets/images/osoAm.png';
 import tiburonAm from '../assets/images/tiburonAm.png';
 import tortugaAm from '../assets/images/tortugaAm.png';
 import unicornioAm from '../assets/images/unicornioAm.png';
-import vacaAm from '../assets/images/vacaS.png';
+import vacaAm from '../assets/images/toroAm.png';
 
 // ---> NUEVO: Diccionario para mapeo rápido
 const avataresAm = {

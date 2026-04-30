@@ -1,0 +1,112 @@
+.login-theme {
+    --accent-color: #4ecca3; 
+    --button-color: #4ecca3;
+    --button-text: #1a1a2e;
+    --card-border: rgba(78, 204, 163, 0.3);
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.register-theme {
+    --accent-color: #e94560; 
+    --button-color: #e94560;
+    --button-text: #ffffff;
+    --card-border: rgba(233, 69, 96, 0.3);
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #2d142c 100%);
+}
+
+.auth-screen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-gradient);
+    font-family: 'Segoe UI', sans-serif;
+    padding: 20px;
+    transition: background 0.5s ease;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    transition: border 0.3s ease;
+}
+
+.auth-header h1 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+    transition: color 0.3s ease;
+}
+
+.auth-header p {
+    color: #a2a2a2;
+    margin-bottom: 30px;
+}
+
+.question {
+    color: #ffffff;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    border-color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-auth-primary {
+    background: var(--button-color);
+    color: var(--button-text);
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-auth-primary:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+}
+
+.auth-footer {
+    margin-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.btn-auth-link {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 5px;
+}

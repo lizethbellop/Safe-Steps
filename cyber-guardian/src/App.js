@@ -8,6 +8,8 @@ import MenuPrueba from './MenuPrueba';
 import PerfilSelector from './PerfilSelector';
 import AñadirPerfil from './AñadirPerfil';
 import ManageProfiles from './ManageProfiles';
+import LoginView from './components/auth/LoginView';
+import RegisterView from './components/auth/RegisterView';
 
 function ProtectedRoute({ children }) {
   const { perfilActivo, cargando } = usePerfil();
@@ -45,7 +47,7 @@ function MenuPrincipal() {
       <div className="menu-content">
         <button
           className="play-button"
-          onClick={() => navigate('/profiles')}
+          onClick={() => navigate('/login')}
         >
           ¡JUGAR!
         </button>
@@ -59,6 +61,10 @@ function App() {
     <PerfilProvider>
       <Router>
         <Routes>
+
+          <Route path="/login" element={<LoginView />} />
+
+          <Route path="/register" element={<RegisterView />} />
 
           <Route path="/" element={<MenuPrincipal />} />
 

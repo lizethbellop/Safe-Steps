@@ -6,7 +6,7 @@ import ManageProfiles from './ManageProfiles';
 
 export default function ProfileSelector() {
   const navigate = useNavigate();
-  const { perfilesGuardados, seleccionarPerfil } = usePerfil();
+  const { perfilesGuardados, seleccionarPerfil, setPerfilActivo } = usePerfil();
 
   const handleSelectProfile = (perfil) => {
     const guardadoExitoso = seleccionarPerfil(perfil.id);
@@ -27,9 +27,18 @@ export default function ProfileSelector() {
     navigate('/manage-profiles');
   };
 
+  const handleLogout = () => {
+    if (setPerfilActivo) setPerfilActivo(null); 
+    navigate('/login'); 
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.content}>
+
+        <button style={styles.logoutButton} onClick={handleLogout}>
+          Cerrar Sesión
+        </button>
 
         {/* LOGO DEL JUEGO */}
         <img
@@ -102,6 +111,22 @@ const styles = {
     alignItems: 'center',
     padding: '10px',
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    position: 'relative',
+  },
+  logoutButton: {
+    position: 'absolute',
+    top: '20px',
+    right: '20px',
+    padding: '10px 20px',
+    background: 'rgba(233, 69, 96, 0.15)', 
+    color: 'white',
+    border: '1px solid #e94560',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    fontSize: '0.9rem',
+    transition: 'all 0.3s ease',
+    backdropFilter: 'blur(5px)',
   },
   content: {
     textAlign: 'center',
