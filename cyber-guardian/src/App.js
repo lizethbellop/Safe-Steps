@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import { PerfilProvider, usePerfil } from './PerfilContext';
+import { PerfilProvider, usePerfil } from './perfil/PerfilContext';
 import './App.css';
 
 import ContenedorJuego from './ContenedorJuego';
-import MenuPrueba from './MenuPrueba';
-import PerfilSelector from './PerfilSelector';
-import AñadirPerfil from './AñadirPerfil';
-import ManageProfiles from './ManageProfiles';
+import MenuPrueba from './menu/Menu';
+import PerfilSelector from './perfil/PerfilSelector';
+import AñadirPerfil from './perfil/AñadirPerfil';
+import ManageProfiles from './perfil/ManageProfiles';
 import LoginView from './components/auth/LoginView';
 import RegisterView from './components/auth/RegisterView';
 

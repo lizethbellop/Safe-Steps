@@ -1,0 +1,347 @@
+/* ManageProfiles.css */
+
+.container_Principal {
+    height: 100vh;
+    background: linear-gradient(135deg, #0c0077ff 0%, #7152b3ff 50%, #fb9b1dff 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title_Encabezado {
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.container_Gestion {
+    width: 90%;
+    max-width: 1000px;
+    max-height: 95vh;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.content_Principal {
+    display: flex;
+    background-color: #f1f1f1ff;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+/* Columna Izquierda: Lista de Perfiles */
+.view_ListaPerfiles {
+    width: 300px;
+    min-width: 250px;
+    background-color: white;
+    border-right: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.scroll_ListaPerfiles {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.header_Lista {
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background-color: #e0e0e0;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    flex-shrink: 0;
+}
+
+.item_PerfilLista {
+    padding: 15px;
+    padding-left: 15px;
+    border-left: 4px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 1px solid #eee;
+    background-color: #ffffff;
+}
+
+.item_PerfilLista:hover {
+    background-color: #f9f9f9;
+}
+
+.item_PerfilLista_Activo {
+    background-color: #ddedf9;
+    border-left: 4px solid #3498db;
+}
+
+.avatar_Mini {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3498db;
+    overflow: hidden;
+}
+
+.img_AvatarMini {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.text_PerfilInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.text_Nombre {
+    font-weight: 600;
+    color: #333;
+}
+
+.text_Apodo {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.space_AzulInferior {
+    flex-shrink: 0;
+    height: 50px;
+    background-color: #3498db;
+}
+
+/* Columna Derecha: Detalles y Edición */
+.view_DetallesPerfil {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #f1f1f1ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.text_Placeholder {
+    margin-top: 100px;
+    font-size: 1.2rem;
+    color: #777;
+    text-align: center;
+}
+
+.section_AvatarGrande {
+    position: relative;
+    margin-bottom: 40px;
+    margin-top: 20px;
+}
+
+.avatar_Grande {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 6px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.img_AvatarGrande {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.icon_Editar {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 40px;
+    height: 40px;
+    background-color: #fff8dfff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #eb7f03ff;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 10;
+    transition: transform 0.2s;
+}
+
+.icon_Editar:hover {
+    transform: scale(1.1);
+}
+
+.group_Input {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.lbl_Etiqueta {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-right: 10px;
+    width: 80px;
+    text-align: right;
+    color: #444;
+}
+
+.txt_Entrada {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.container_Botones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.btn_Guardar {
+    padding: 10px 30px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #4fa8c8ff, #0439b6ff);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(40, 4, 111, 0.4);
+    transition: all 0.25s;
+}
+
+.btn_Cancelar {
+    padding: 10px 30px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #ffcf70ff, #eb7f03ff);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(162, 162, 162, 0.4);
+    transition: all 0.25s;
+}
+
+.btn_Eliminar {
+    padding: 10px 30px;
+    font-size: 1rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-right: auto;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+    transition: all 0.25s;
+}
+
+.btn_Guardar:hover, .btn_Cancelar:hover, .btn_Eliminar:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* Modal de Selección de Avatar */
+.modal_Fondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal_Contenido {
+    background-color: #1a1a2e;
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal_Titulo {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.grid_Avatares {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.option_Avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    overflow: hidden;
+}
+
+.option_Avatar:hover {
+    transform: scale(1.1);
+}
+
+.img_OpcionAvatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.btn_CerrarModal {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}

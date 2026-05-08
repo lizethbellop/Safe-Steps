@@ -1,16 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../../config/firebaseConfig'; 
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import './Auth.css';
 
 const LoginView = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null); 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login con:", email);
-    navigate('/profiles'); 
+    setError(null);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log("Acceso concedido para:", email);
+      navigate('/profiles'); 
+    } catch (err) {
+      console.error("Error en login:", err.code);
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setError("Correo o contraseña incorrectos.");
+      } else {
+        setError("Ocurrió un error al intentar entrar. Inténtalo más tarde.");
+      }
+    }
   };
 
   return (
@@ -22,6 +37,7 @@ const LoginView = () => {
         </div>
         
         <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <p className="error-message" style={{color: 'red', textAlign: 'center'}}>{error}</p>}
           <div className="input-group">
             <input 
               type="email" 

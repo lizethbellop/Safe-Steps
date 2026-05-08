@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePerfil } from './PerfilContext';
+import { usePerfil } from './perfil/PerfilContext';
 
 import JuegoTesoroPrivacidad from './juegos/JuegoTesoroPrivacidad';
 import JuegoEscudoRespeto from './juegos/JuegoEscudoRespeto';

@@ -1,6 +1,6 @@
 import react, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePerfil } from '../PerfilContext'; 
+import { usePerfil } from '../perfil/PerfilContext'; 
 import { User, MapPin, FileText, Image as ImageIcon, Loader } from 'lucide-react';
 import { AVATAR_MAPPER } from '../assets/pfps/AvatarMapper'; 
 

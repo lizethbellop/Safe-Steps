@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePerfil } from '../PerfilContext';
+import { usePerfil } from '../perfil/PerfilContext';
 import { Loader, Shield, Trash2, Heart, Star, Clock, Target, HelpCircle } from 'lucide-react';
 
 // Importar assets

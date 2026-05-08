@@ -1,0 +1,230 @@
+.container_Principal {
+  min-height: 100vh;
+  background: linear-gradient(145deg, #ffac5eff 0%, #ff7f1eff 50%, #ae19d7ff 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.content_Area {
+  max-width: 600px;
+  width: 100%;
+}
+
+.title_Encabezado {
+  font-size: 3rem;
+  color: white;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.subtitle_Descripcion {
+  font-size: 1.2rem;
+  color: #ffffffff;
+  margin-bottom: 40px;
+}
+
+.container_Formulario {
+  background-color: rgba(27, 19, 19, 0.06);
+  border-radius: 10px;
+  padding: 40px;
+  margin-bottom: 30px;
+}
+
+.section_Avatar {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.container_AvatarSeleccionado {
+  flex-shrink: 0;
+}
+
+.view_Avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  overflow: hidden;
+}
+
+.placeholder_Avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  background-color: #2a0747ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.text_Placeholder {
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 1);
+}
+
+.emoji_Avatar {
+  font-size: 5rem;
+}
+
+.img_Avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 10px;
+}
+
+.btn_ElegirAvatar {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background-color: rgba(146, 137, 137, 0.5);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.section_Campo {
+  margin-bottom: 25px;
+}
+
+.lbl_Etiqueta {
+  display: block;
+  color: #ffffffff;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.txt_Entrada {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  background-color: #ffffffff;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.container_Acciones {
+  display: flex;
+  gap: 20px;
+}
+
+.btn_Continuar {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #7cdafcff, #1f87ccff);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex: 1;
+}
+
+.btn_Cancelar {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #ff8064ff, #d91031ff);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex: 1;
+}
+
+.btn_Continuar:hover, .btn_Cancelar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+.modal_Fondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal_Contenido {
+  background-color: #1a1a2e;
+  padding: 40px;
+  border-radius: 15px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal_Titulo {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.grid_Avatares {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.option_Avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  overflow: hidden;
+}
+
+.emoji_Opcion {
+  font-size: 3rem;
+}
+
+.img_OpcionAvatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.btn_CerrarModal {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}

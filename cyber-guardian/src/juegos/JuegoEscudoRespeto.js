@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, Heart, Star, CheckCircle, XCircle, Loader, AlertTriangle } from 'lucide-react';
-import { usePerfil } from '../PerfilContext';
+import { usePerfil } from '../perfil/PerfilContext';
 import { useNavigate } from 'react-router-dom';
 
 // ---> NUEVO: Importaciones de los personajes "Es" (Escudo de Respeto)

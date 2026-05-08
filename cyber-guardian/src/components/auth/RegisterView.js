@@ -1,30 +1,49 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { auth, db } from '../../config/firebaseConfig'; 
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore'; 
 import './Auth.css';
 
 const RegisterView = () => {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
       return;
     }
-    console.log("Registrando:", formData);
-    navigate('/login'); 
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      await setDoc(doc(db, "usuarios", user.uid), {
+        correo: user.email,
+        rol: "tutor",
+        fechaRegistro: new Date()
+      });
+      // -------------------------------------
+
+      console.log("Usuario y expediente creados con éxito");
+      navigate('/profiles'); 
+    } catch (err) {
+      console.error("Error al registrar:", err.code);
+      if (err.code === 'auth/email-already-in-use') {
+        setError('Este correo ya está registrado.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('La contraseña debe tener al menos 6 caracteres.');
+      } else {
+        setError('Ocurrió un error en el registro. Inténtalo de nuevo.');
+      }
+    }
   };
 
   return (
@@ -32,51 +51,47 @@ const RegisterView = () => {
       <div className="auth-card">
         <div className="auth-header">
           <h1>Safe steps</h1>
-          <p>Registro de Nuevo Tutor</p>
+          <p>Crea tu cuenta de tutor</p>
         </div>
         
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <input 
-              type="text" 
-              name="nombre"
-              placeholder="Nombre completo" 
-              onChange={handleChange}
-              required 
-            />
-          </div>
+        <form className="auth-form" onSubmit={handleRegister}>
+          {error && <p className="error-text" style={{color: 'red', textAlign: 'center'}}>{error}</p>}
+          
           <div className="input-group">
             <input 
               type="email" 
-              name="email"
-              placeholder="Correo electrónico" 
-              onChange={handleChange}
+              placeholder="Correo del tutor" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required 
             />
           </div>
+          
           <div className="input-group">
             <input 
               type="password" 
-              name="password"
               placeholder="Contraseña" 
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required 
             />
           </div>
+
           <div className="input-group">
             <input 
               type="password" 
-              name="confirmPassword"
               placeholder="Confirmar contraseña" 
-              onChange={handleChange}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required 
             />
           </div>
-          <button type="submit" className="btn-auth-primary">CREAR CUENTA</button>
+
+          <button type="submit" className="btn-auth-primary">REGISTRARSE</button>
         </form>
 
         <div className="auth-footer">
-          <p className='question'>¿Ya tienes una cuenta?</p>
+          <p className='question'>¿Ya tienes cuenta?</p>
           <button onClick={() => navigate('/login')} className="btn-auth-link">
             Inicia sesión aquí
           </button>
