@@ -13,9 +13,9 @@ import iconoAldea from '../assets/images/amigosIcono.png';
 
 export default function Menu() {
   const navigate = useNavigate();
-  const { perfilActivo, actualizarPerfil, cerrarSesionTutor } = usePerfil();
+  // EXTRAEMOS deseleccionarPerfil en lugar de cerrarSesionTutor
+  const { perfilActivo, actualizarPerfil, deseleccionarPerfil } = usePerfil(); 
   
-  // Estado local para el switch, sincronizado con la BD
   const [modoEnfoque, setModoEnfoque] = useState(perfilActivo?.modoEnfoque || false);
 
   const juegos = [
@@ -92,10 +92,8 @@ export default function Menu() {
 
   const [juegoSeleccionado, setJuegoSeleccionado] = useState(juegos[0]);
 
-  // CORRECCIÓN: Función de resaltado limpia que no concatena erróneamente
   const highlightKeywords = (text, keywords, color) => {
     if (!keywords || !text) return text;
-    // Creamos un regex que busque todas las palabras a la vez
     const regex = new RegExp(`(${keywords.join('|')})`, 'gi');
     const parts = text.split(regex);
 
@@ -114,12 +112,17 @@ export default function Menu() {
     }
   };
 
+  // --- ESTA ES LA FUNCIÓN QUE CORRIGE EL ERROR DE LOS PERFILES ---
+  const handleRegresarASeleccion = () => {
+    deseleccionarPerfil(); // Quita al niño pero NO cierra la cuenta del papá
+    navigate('/profiles');
+  };
+
   const temaActual = modoEnfoque ? juegoSeleccionado.focusTheme : juegoSeleccionado.theme;
 
   return (
     <div className="contenedor_Menu">
       
-      {/* COLUMNA IZQUIERDA */}
       <div className="columna_Sidebar" style={{backgroundColor: modoEnfoque ? '#f5f5f5' : '#FFFFFF'}}>
         
         <div className="view_InfoUsuario" style={{
@@ -164,13 +167,13 @@ export default function Menu() {
         </div>
 
         <div className="view_PiePagina">
-          <div className="btn_CerrarSesionCirculo" onClick={() => { cerrarSesionTutor(); navigate('/profiles'); }}>
+          {/* USAMOS LA NUEVA FUNCIÓN AQUÍ */}
+          <div className="btn_CerrarSesionCirculo" onClick={handleRegresarASeleccion}>
             <span style={{ fontSize: '24px' }}>👋</span>
           </div>
         </div>
       </div>
 
-      {/* DERECHA (CONTENIDO) */}
       <div className="view_ContenidoJuego" style={{ background: temaActual.bgGradient }}>
         <img 
           src={juegoSeleccionado.fondo} 

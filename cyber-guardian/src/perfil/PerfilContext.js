@@ -17,6 +17,7 @@ export const PerfilProvider = ({ children }) => {
   const [perfilesGuardados, setPerfilesGuardados] = useState([]);
   const [cargando, setCargando] = useState(true);
 
+  // Escucha cambios en la autenticación del tutor y carga sus perfiles
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -28,6 +29,7 @@ export const PerfilProvider = ({ children }) => {
         });
         return () => unsubscribeFirestore();
       } else {
+        // Al cerrar sesión del tutor, limpiamos todo
         setPerfilesGuardados([]);
         setPerfilActivo(null);
         setCargando(false);
@@ -36,6 +38,12 @@ export const PerfilProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  // --- NUEVA FUNCIÓN: Solo quita el niño activo, mantiene al padre logueado ---
+  const deseleccionarPerfil = () => {
+    setPerfilActivo(null);
+  };
+
+  // Actualiza datos (como modo enfoque o puntos) en el documento del niño
   const actualizarPerfil = async (cambios) => {
     if (!perfilActivo || !auth.currentUser) return;
     try {
@@ -78,6 +86,7 @@ export const PerfilProvider = ({ children }) => {
     perfilesGuardados,
     cargando,
     seleccionarPerfil,
+    deseleccionarPerfil, // <-- Exportada para usar en el botón 👋 del menú
     cerrarSesionTutor,
     agregarPerfil,
     actualizarPerfil, 
@@ -87,3 +96,5 @@ export const PerfilProvider = ({ children }) => {
 
   return <PerfilContext.Provider value={value}>{children}</PerfilContext.Provider>;
 };
+
+export default PerfilContext;
