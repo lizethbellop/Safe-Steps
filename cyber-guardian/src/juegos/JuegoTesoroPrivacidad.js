@@ -1,25 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { usePerfil } from '../perfil/PerfilContext';
-import { Loader, Shield, Trash2, Heart, Star, Clock, Target, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { usePerfil } from "../perfil/PerfilContext";
+import {
+  Loader,
+  Shield,
+  Trash2,
+  Heart,
+  Star,
+  Clock,
+  Target,
+  HelpCircle,
+} from "lucide-react";
+import { guardarResultadoJuego } from "../services/gameService";
 
 // Importar assets
-import fondoJuego from '../assets/images/juego1.jpg';
-import draggleSprite from '../assets/images/draggleSprite.png';
-import kittySprite from '../assets/images/kitty.png';
-import cowSprite from '../assets/images/cow.png';
-import chickenSprite from '../assets/images/chicken.png';
+import fondoJuego from "../assets/images/juego1.jpg";
+import draggleSprite from "../assets/images/draggleSprite.png";
+import kittySprite from "../assets/images/kitty.png";
+import cowSprite from "../assets/images/cow.png";
+import chickenSprite from "../assets/images/chicken.png";
 
 const JuegoTesoroPrivacidad = () => {
   const navigate = useNavigate();
-  const { perfilActivo, actualizarPuntos } = usePerfil();
-  
+  const { perfilActivo, setPerfilActivo } = usePerfil();
+
   const modoEnfoque = perfilActivo?.modoEnfoque || false;
 
   // Estados del juego
-  const [pantalla, setPantalla] = useState('intro'); // Ahora empieza en intro
+  const [pantalla, setPantalla] = useState("intro"); // Ahora empieza en intro
   const [personajeSeleccionado, setPersonajeSeleccionado] = useState(null);
-  const [posicionJugador, setPosicionJugador] = useState(460); 
+  const [posicionJugador, setPosicionJugador] = useState(460);
   const [objetosCayendo, setObjetosCayendo] = useState([]);
   const [vidas, setVidas] = useState(3);
   const [puntos, setPuntos] = useState(0);
@@ -27,10 +37,11 @@ const JuegoTesoroPrivacidad = () => {
   const [tiempoRestante, setTiempoRestante] = useState(120);
   const [loading, setLoading] = useState(false);
   const [efectosFlotantes, setEfectosFlotantes] = useState([]);
-  
+  const [erroresPartida, setErroresPartida] = useState([]);
+
   // Estado para los objetos generados por la IA
   const [poolObjetos, setPoolObjetos] = useState({ buenos: [], malos: [] });
-  
+
   const gameLoopRef = useRef(null);
   const spawnTimerRef = useRef(null);
   const timerRef = useRef(null);
@@ -46,22 +57,40 @@ const JuegoTesoroPrivacidad = () => {
 
   // API Config - ✅ ACTUALIZADO
   const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
-  const GEMINI_MODEL = 'gemini-2.0-flash';
+  const GEMINI_MODEL = "gemini-2.0-flash";
 
   // Personajes
   const personajes = [
-    { id: 'dragon', nombre: 'Dragoncito', emoji: '🐉', sprite: draggleSprite, scale: 1 },
-    { id: 'gato', nombre: 'Gatito', emoji: '🐱', sprite: kittySprite, scale: 1 },
-    { id: 'vaca', nombre: 'Vaquita', emoji: '🐮', sprite: cowSprite, scale: 1 },
-    { id: 'pollo', nombre: 'Pollito', emoji: '🐔', sprite: chickenSprite, scale: 1 }
+    {
+      id: "dragon",
+      nombre: "Dragoncito",
+      emoji: "🐉",
+      sprite: draggleSprite,
+      scale: 1,
+    },
+    {
+      id: "gato",
+      nombre: "Gatito",
+      emoji: "🐱",
+      sprite: kittySprite,
+      scale: 1,
+    },
+    { id: "vaca", nombre: "Vaquita", emoji: "🐮", sprite: cowSprite, scale: 1 },
+    {
+      id: "pollo",
+      nombre: "Pollito",
+      emoji: "🐔",
+      sprite: chickenSprite,
+      scale: 1,
+    },
   ];
 
   // 🤖 FUNCIÓN: Generar Objetos con Gemini - PROMPT MEJORADO
   const generarObjetosIA = async () => {
     setLoading(true);
-    
+
     const randomSeed = Math.random().toString(36).substring(7);
-    
+
     const prompt = `Genera objetos para un juego educativo de privacidad digital para niños de 8-12 años.
 
 CONTEXTO: Los niños deben aprender qué información es PRIVADA (debe protegerse) vs PÚBLICA (se puede compartir).
@@ -104,118 +133,129 @@ Responde SOLO con este JSON (sin markdown):
 }`;
 
     try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, 
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-                generationConfig: { 
-                  maxOutputTokens: 800,
-                  temperature: 1.0
-                }
-              }),
-            }
-        );
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: {
+              maxOutputTokens: 800,
+              temperature: 1.0,
+            },
+          }),
+        },
+      );
 
-        const data = await response.json();
-        const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        
-        if (content) {
-            const cleanContent = content.replace(/```json\n?|\n?```/g, '').trim();
-            const objetosGenerados = JSON.parse(cleanContent);
-            
-            const buenos = objetosGenerados.buenos.map(o => ({ ...o, puntos: 10, esIA: true }));
-            const malos = objetosGenerados.malos.map(o => ({ ...o, puntos: 0, esIA: true }));
-            
-            setPoolObjetos({ buenos, malos });
-        } else {
-            throw new Error("No content");
-        }
+      const data = await response.json();
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (content) {
+        const cleanContent = content.replace(/```json\n?|\n?```/g, "").trim();
+        const objetosGenerados = JSON.parse(cleanContent);
+
+        const buenos = objetosGenerados.buenos.map((o) => ({
+          ...o,
+          puntos: 10,
+          esIA: true,
+        }));
+        const malos = objetosGenerados.malos.map((o) => ({
+          ...o,
+          puntos: 0,
+          esIA: true,
+        }));
+
+        setPoolObjetos({ buenos, malos });
+      } else {
+        throw new Error("No content");
+      }
     } catch (error) {
-        console.error("Error IA, usando fallback", error);
-        // Fallback extenso
-        setPoolObjetos({
-            buenos: [
-                { emoji: '🔑', nombre: 'Mi Contraseña', puntos: 10, esIA: false },
-                { emoji: '📱', nombre: 'Mi Teléfono', puntos: 10, esIA: false },
-                { emoji: '🏠', nombre: 'Mi Dirección', puntos: 10, esIA: false },
-                { emoji: '📸', nombre: 'Foto Personal', puntos: 10, esIA: false },
-                { emoji: '🆔', nombre: 'Mi INE/ID', puntos: 10, esIA: false },
-                { emoji: '💳', nombre: 'Tarjeta Bancaria', puntos: 10, esIA: false },
-                { emoji: '🔐', nombre: 'PIN del Banco', puntos: 10, esIA: false },
-                { emoji: '📧', nombre: 'Mi Email', puntos: 10, esIA: false },
-                { emoji: '🏫', nombre: 'Mi Escuela', puntos: 10, esIA: false },
-                { emoji: '💬', nombre: 'Chat Privado', puntos: 10, esIA: false },
-                { emoji: '👨‍👩‍👧', nombre: 'Nombre de Mamá', puntos: 10, esIA: false },
-                { emoji: '💼', nombre: 'Trabajo de Papá', puntos: 10, esIA: false },
-                { emoji: '🗺️', nombre: 'Ruta a Casa', puntos: 10, esIA: false },
-                { emoji: '🏥', nombre: 'Datos Médicos', puntos: 10, esIA: false },
-                { emoji: '📍', nombre: 'Ubicación GPS', puntos: 10, esIA: false }
-            ],
-            malos: [
-                { emoji: '🎨', nombre: 'Color Favorito', puntos: 0, esIA: false },
-                { emoji: '☀️', nombre: 'El Clima', puntos: 0, esIA: false },
-                { emoji: '😂', nombre: 'Meme Viral', puntos: 0, esIA: false },
-                { emoji: '🍕', nombre: 'Pizza Favorita', puntos: 0, esIA: false },
-                { emoji: '⚽', nombre: 'Mi Deporte', puntos: 0, esIA: false },
-                { emoji: '🎮', nombre: 'Juego Favorito', puntos: 0, esIA: false },
-                { emoji: '🎵', nombre: 'Mi Canción', puntos: 0, esIA: false },
-                { emoji: '🎬', nombre: 'Peli Favorita', puntos: 0, esIA: false },
-                { emoji: '📚', nombre: 'Libro Favorito', puntos: 0, esIA: false },
-                { emoji: '🐕', nombre: 'Nombre Mascota', puntos: 0, esIA: false },
-                { emoji: '🌮', nombre: 'Comida Favorita', puntos: 0, esIA: false },
-                { emoji: '🎤', nombre: 'Cantante Fav', puntos: 0, esIA: false },
-                { emoji: '📺', nombre: 'Serie Favorita', puntos: 0, esIA: false },
-                { emoji: '🦸', nombre: 'Superhéroe Fav', puntos: 0, esIA: false },
-                { emoji: '🏖️', nombre: 'Lugar Favorito', puntos: 0, esIA: false }
-            ]
-        });
+      console.error("Error IA, usando fallback", error);
+      // Fallback extenso
+      setPoolObjetos({
+        buenos: [
+          { emoji: "🔑", nombre: "Mi Contraseña", puntos: 10, esIA: false },
+          { emoji: "📱", nombre: "Mi Teléfono", puntos: 10, esIA: false },
+          { emoji: "🏠", nombre: "Mi Dirección", puntos: 10, esIA: false },
+          { emoji: "📸", nombre: "Foto Personal", puntos: 10, esIA: false },
+          { emoji: "🆔", nombre: "Mi INE/ID", puntos: 10, esIA: false },
+          { emoji: "💳", nombre: "Tarjeta Bancaria", puntos: 10, esIA: false },
+          { emoji: "🔐", nombre: "PIN del Banco", puntos: 10, esIA: false },
+          { emoji: "📧", nombre: "Mi Email", puntos: 10, esIA: false },
+          { emoji: "🏫", nombre: "Mi Escuela", puntos: 10, esIA: false },
+          { emoji: "💬", nombre: "Chat Privado", puntos: 10, esIA: false },
+          { emoji: "👨‍👩‍👧", nombre: "Nombre de Mamá", puntos: 10, esIA: false },
+          { emoji: "💼", nombre: "Trabajo de Papá", puntos: 10, esIA: false },
+          { emoji: "🗺️", nombre: "Ruta a Casa", puntos: 10, esIA: false },
+          { emoji: "🏥", nombre: "Datos Médicos", puntos: 10, esIA: false },
+          { emoji: "📍", nombre: "Ubicación GPS", puntos: 10, esIA: false },
+        ],
+        malos: [
+          { emoji: "🎨", nombre: "Color Favorito", puntos: 0, esIA: false },
+          { emoji: "☀️", nombre: "El Clima", puntos: 0, esIA: false },
+          { emoji: "😂", nombre: "Meme Viral", puntos: 0, esIA: false },
+          { emoji: "🍕", nombre: "Pizza Favorita", puntos: 0, esIA: false },
+          { emoji: "⚽", nombre: "Mi Deporte", puntos: 0, esIA: false },
+          { emoji: "🎮", nombre: "Juego Favorito", puntos: 0, esIA: false },
+          { emoji: "🎵", nombre: "Mi Canción", puntos: 0, esIA: false },
+          { emoji: "🎬", nombre: "Peli Favorita", puntos: 0, esIA: false },
+          { emoji: "📚", nombre: "Libro Favorito", puntos: 0, esIA: false },
+          { emoji: "🐕", nombre: "Nombre Mascota", puntos: 0, esIA: false },
+          { emoji: "🌮", nombre: "Comida Favorita", puntos: 0, esIA: false },
+          { emoji: "🎤", nombre: "Cantante Fav", puntos: 0, esIA: false },
+          { emoji: "📺", nombre: "Serie Favorita", puntos: 0, esIA: false },
+          { emoji: "🦸", nombre: "Superhéroe Fav", puntos: 0, esIA: false },
+          { emoji: "🏖️", nombre: "Lugar Favorito", puntos: 0, esIA: false },
+        ],
+      });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
   // Cargar objetos al montar el componente
   useEffect(() => {
-      generarObjetosIA();
+    generarObjetosIA();
   }, []);
 
   // Ir a selección de personaje
   const irASeleccion = () => {
-    setPantalla('seleccion');
+    setPantalla("seleccion");
   };
 
   // Seleccionar personaje
   const seleccionarPersonaje = (personaje) => {
     setPersonajeSeleccionado(personaje);
-    setPantalla('jugando');
+    setPantalla("jugando");
   };
 
   // Input Jugador
   useEffect(() => {
-    if (pantalla !== 'jugando') return;
+    if (pantalla !== "jugando") return;
 
     const manejarTecla = (e) => {
-      if (['ArrowLeft', 'a', 'A'].includes(e.key)) {
-        setPosicionJugador(prev => Math.max(0, prev - VELOCIDAD_JUGADOR));
-      } else if (['ArrowRight', 'd', 'D'].includes(e.key)) {
-        setPosicionJugador(prev => Math.min(ANCHO_JUEGO - TAMANO_JUGADOR, prev + VELOCIDAD_JUGADOR));
+      if (["ArrowLeft", "a", "A"].includes(e.key)) {
+        setPosicionJugador((prev) => Math.max(0, prev - VELOCIDAD_JUGADOR));
+      } else if (["ArrowRight", "d", "D"].includes(e.key)) {
+        setPosicionJugador((prev) =>
+          Math.min(ANCHO_JUEGO - TAMANO_JUGADOR, prev + VELOCIDAD_JUGADOR),
+        );
       }
     };
 
-    window.addEventListener('keydown', manejarTecla);
-    return () => window.removeEventListener('keydown', manejarTecla);
+    window.addEventListener("keydown", manejarTecla);
+    return () => window.removeEventListener("keydown", manejarTecla);
   }, [pantalla]);
 
   // Spawner (Generar objetos cayendo)
   useEffect(() => {
-    if (pantalla !== 'jugando') return;
-    if (poolObjetos.buenos.length === 0 || poolObjetos.malos.length === 0) return;
+    if (pantalla !== "jugando") return;
+    if (poolObjetos.buenos.length === 0 || poolObjetos.malos.length === 0)
+      return;
 
     const spawnObject = () => {
-      const esBueno = Math.random() > 0.35; 
+      const esBueno = Math.random() > 0.35;
       const lista = esBueno ? poolObjetos.buenos : poolObjetos.malos;
       const objetoBase = lista[Math.floor(Math.random() * lista.length)];
 
@@ -224,10 +264,10 @@ Responde SOLO con este JSON (sin markdown):
         x: Math.random() * (ANCHO_JUEGO - 80),
         y: -60,
         esBueno: esBueno,
-        ...objetoBase
+        ...objetoBase,
       };
 
-      setObjetosCayendo(prev => [...prev, nuevoObjeto]);
+      setObjetosCayendo((prev) => [...prev, nuevoObjeto]);
     };
 
     spawnObject();
@@ -242,14 +282,14 @@ Responde SOLO con este JSON (sin markdown):
 
   // 🚀 GAME LOOP PRINCIPAL
   useEffect(() => {
-    if (pantalla !== 'jugando') return;
+    if (pantalla !== "jugando") return;
 
     gameLoopRef.current = setInterval(() => {
-      setObjetosCayendo(prev => {
+      setObjetosCayendo((prev) => {
         return prev
-          .map(obj => ({ ...obj, y: obj.y + VELOCIDAD_OBJETOS }))
-          .filter(obj => {
-            const colisiona = 
+          .map((obj) => ({ ...obj, y: obj.y + VELOCIDAD_OBJETOS }))
+          .filter((obj) => {
+            const colisiona =
               obj.x < posicionJugador + TAMANO_JUGADOR &&
               obj.x + 100 > posicionJugador &&
               obj.y < ALTO_JUEGO - 100 &&
@@ -257,49 +297,62 @@ Responde SOLO con este JSON (sin markdown):
 
             if (colisiona) {
               if (obj.esBueno) {
-                setPuntos(p => p + obj.puntos);
-                setDatosAtrapados(d => d + 1);
+                setPuntos((p) => p + obj.puntos);
+                setDatosAtrapados((d) => d + 1);
                 const idEfecto = Date.now() + Math.random();
-                setEfectosFlotantes(efectos => [...efectos, {
-                  id: idEfecto, 
-                  x: obj.x, 
-                  y: obj.y, 
-                  puntos: obj.puntos 
-                }]);
+                setEfectosFlotantes((efectos) => [
+                  ...efectos,
+                  {
+                    id: idEfecto,
+                    x: obj.x,
+                    y: obj.y,
+                    puntos: obj.puntos,
+                  },
+                ]);
                 setTimeout(() => {
-                  setEfectosFlotantes(efectos => efectos.filter(e => e.id !== idEfecto));
+                  setEfectosFlotantes((efectos) =>
+                    efectos.filter((e) => e.id !== idEfecto),
+                  );
                 }, 800);
               } else {
-                setVidas(v => v - 1);
+                setVidas((v) => v - 1);
+                setErroresPartida((prev) => [
+                  ...prev,
+                  `Atrapó por error un dato público: ${obj.emoji} ${obj.nombre}`,
+                ]);
               }
               return false;
             }
 
             if (obj.y >= ALTO_JUEGO) {
-                if (obj.esBueno) {
-                    setPuntos(p => Math.max(0, p - PENALIZACION_CAIDA));
-                }
-                return false;
+              if (obj.esBueno) {
+                setPuntos((p) => Math.max(0, p - PENALIZACION_CAIDA));
+                setErroresPartida((prev) => [
+                  ...prev,
+                  `Dejó sin proteger un dato privado: ${obj.emoji} ${obj.nombre}`,
+                ]);
+              }
+              return false;
             }
 
             return true;
           });
       });
-    }, 1000 / 60); 
+    }, 1000 / 60);
 
     return () => clearInterval(gameLoopRef.current);
   }, [pantalla, posicionJugador]);
 
   // Timer
   useEffect(() => {
-    if (pantalla !== 'jugando') return;
+    if (pantalla !== "jugando") return;
 
     timerRef.current = setInterval(() => {
-      setTiempoRestante(prev => {
+      setTiempoRestante((prev) => {
         if (prev <= 1) {
-            clearInterval(timerRef.current);
-            finalizarJuego(false);
-            return 0;
+          clearInterval(timerRef.current);
+          finalizarJuego(false);
+          return 0;
         }
         return prev - 1;
       });
@@ -310,8 +363,8 @@ Responde SOLO con este JSON (sin markdown):
 
   // Verificar condiciones de victoria/derrota
   useEffect(() => {
-    if (pantalla !== 'jugando') return;
-    
+    if (pantalla !== "jugando") return;
+
     if (vidas <= 0) {
       finalizarJuego(false);
     } else if (datosAtrapados >= META_DATOS) {
@@ -319,14 +372,27 @@ Responde SOLO con este JSON (sin markdown):
     }
   }, [vidas, datosAtrapados, pantalla]);
 
-  const finalizarJuego = (victoria) => {
-      const puntosTotales = (perfilActivo?.puntos || 0) + puntos;
-      actualizarPuntos(puntosTotales);
-      setPantalla(victoria ? 'victoria' : 'derrota');
+  const finalizarJuego = async (victoria) => {
+    setPerfilActivo((prev) => ({
+      ...prev,
+      puntosExperiencia: (prev?.puntosExperiencia || 0) + puntos,
+    }));
+
+    if (perfilActivo?.id) {
+      await guardarResultadoJuego(
+        perfilActivo.id,
+        "Tesoro de Privacidad",
+        puntos,
+        erroresPartida,
+      );
+    } else {
+      console.warn("No se encontró el ID del perfil. No se guardará en BD.");
+    }
+    setPantalla(victoria ? "victoria" : "derrota");
   };
 
   const reiniciar = () => {
-    setPantalla('seleccion');
+    setPantalla("seleccion");
     setPersonajeSeleccionado(null);
     setPosicionJugador(460);
     setObjetosCayendo([]);
@@ -334,30 +400,32 @@ Responde SOLO con este JSON (sin markdown):
     setPuntos(0);
     setDatosAtrapados(0);
     setTiempoRestante(120);
-    generarObjetosIA(); 
+    generarObjetosIA();
+    setErroresPartida([]);
   };
 
-  const formatearTiempo = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+  const formatearTiempo = (s) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   // PANTALLA DE CARGA
   if (loading) {
-      return (
-        <div style={styles.loadingContainer}>
-            <Loader className="animate-spin" size={64} color="#4CAF50" />
-            <h2 style={styles.loadingText}>Preparando datos privados...</h2>
-        </div>
-      );
+    return (
+      <div style={styles.loadingContainer}>
+        <Loader className="animate-spin" size={64} color="#4CAF50" />
+        <h2 style={styles.loadingText}>Preparando datos privados...</h2>
+      </div>
+    );
   }
 
   // PANTALLA: Intro/Instrucciones
-  if (pantalla === 'intro') {
+  if (pantalla === "intro") {
     return (
       <div style={styles.container}>
         <div style={styles.introCard}>
           <div style={styles.introIconContainer}>
             <Shield size={50} color="#fff" />
           </div>
-          
+
           <h1 style={styles.introTitle}>Tesoro de privacidad</h1>
           <p style={styles.introSubtitle}>
             Aprende a proteger tu información personal en internet
@@ -365,31 +433,34 @@ Responde SOLO con este JSON (sin markdown):
 
           <div style={styles.instructionsBox}>
             <h3 style={styles.instructionsTitle}>📋 Cómo jugar</h3>
-            
+
             <div style={styles.instructionItem}>
               <div style={styles.instructionIcon}>
                 <Shield size={20} color="#4CAF50" />
               </div>
               <div style={styles.instructionText}>
-                <strong>Atrapa los VERDES</strong> - Son datos privados que debes proteger (contraseñas, dirección, fotos personales)
+                <strong>Atrapa los VERDES</strong> - Son datos privados que
+                debes proteger (contraseñas, dirección, fotos personales)
               </div>
             </div>
-            
+
             <div style={styles.instructionItem}>
               <div style={styles.instructionIcon}>
                 <Trash2 size={20} color="#f44336" />
               </div>
               <div style={styles.instructionText}>
-                <strong>Evita los ROJOS</strong> - Son datos públicos que no importa compartir (color favorito, clima)
+                <strong>Evita los ROJOS</strong> - Son datos públicos que no
+                importa compartir (color favorito, clima)
               </div>
             </div>
-            
+
             <div style={styles.instructionItem}>
               <div style={styles.instructionIcon}>
                 <Target size={20} color="#2196F3" />
               </div>
               <div style={styles.instructionText}>
-                <strong>Meta:</strong> Atrapa {META_DATOS} datos privados antes de que se acabe el tiempo
+                <strong>Meta:</strong> Atrapa {META_DATOS} datos privados antes
+                de que se acabe el tiempo
               </div>
             </div>
           </div>
@@ -440,24 +511,26 @@ Responde SOLO con este JSON (sin markdown):
   }
 
   // PANTALLA: Selección
-  if (pantalla === 'seleccion') {
+  if (pantalla === "seleccion") {
     return (
       <div style={styles.container}>
         <div style={styles.seleccionCard}>
           <h2 style={styles.seleccionTitle}>Elige tu protector</h2>
-          <p style={styles.seleccionSubtitle}>¿Quién te ayudará a proteger tus datos?</p>
-          
+          <p style={styles.seleccionSubtitle}>
+            ¿Quién te ayudará a proteger tus datos?
+          </p>
+
           <div style={styles.personajesGrid}>
-            {personajes.map(p => (
-              <div 
-                key={p.id} 
-                style={styles.tarjetaPersonaje} 
+            {personajes.map((p) => (
+              <div
+                key={p.id}
+                style={styles.tarjetaPersonaje}
                 onClick={() => seleccionarPersonaje(p)}
               >
-                <img 
-                  src={p.sprite} 
-                  alt={p.nombre} 
-                  style={styles.personajeImg} 
+                <img
+                  src={p.sprite}
+                  alt={p.nombre}
+                  style={styles.personajeImg}
                 />
                 <p style={styles.nombrePersonaje}>
                   {p.emoji} {p.nombre}
@@ -465,10 +538,10 @@ Responde SOLO con este JSON (sin markdown):
               </div>
             ))}
           </div>
-          
-          <button 
-            style={styles.backButton} 
-            onClick={() => setPantalla('intro')}
+
+          <button
+            style={styles.backButton}
+            onClick={() => setPantalla("intro")}
           >
             ← Volver a instrucciones
           </button>
@@ -478,34 +551,38 @@ Responde SOLO con este JSON (sin markdown):
   }
 
   // PANTALLA: Jugando
-  if (pantalla === 'jugando') {
+  if (pantalla === "jugando") {
     return (
       <div style={styles.gameContainer}>
         {/* Header mejorado */}
         <div style={styles.gameHeader}>
           <div style={styles.headerStat}>
             <Clock size={20} color="#f59e0b" />
-            <span style={styles.headerStatText}>{formatearTiempo(tiempoRestante)}</span>
+            <span style={styles.headerStatText}>
+              {formatearTiempo(tiempoRestante)}
+            </span>
           </div>
-          
+
           <div style={styles.headerStat}>
             <div style={styles.livesContainer}>
               {[...Array(3)].map((_, i) => (
-                <Heart 
-                  key={i} 
-                  size={20} 
-                  color={i < vidas ? '#ef4444' : '#374151'} 
-                  fill={i < vidas ? '#ef4444' : 'none'}
+                <Heart
+                  key={i}
+                  size={20}
+                  color={i < vidas ? "#ef4444" : "#374151"}
+                  fill={i < vidas ? "#ef4444" : "none"}
                 />
               ))}
             </div>
           </div>
-          
+
           <div style={styles.headerStat}>
             <Target size={20} color="#10b981" />
-            <span style={styles.headerStatText}>{datosAtrapados}/{META_DATOS}</span>
+            <span style={styles.headerStatText}>
+              {datosAtrapados}/{META_DATOS}
+            </span>
           </div>
-          
+
           <div style={styles.headerStat}>
             <Star size={20} color="#fbbf24" fill="#fbbf24" />
             <span style={styles.headerStatText}>{puntos}</span>
@@ -513,13 +590,15 @@ Responde SOLO con este JSON (sin markdown):
         </div>
 
         {/* Área de juego */}
-        <div style={{
-          ...styles.areaJuego, 
-          // Mantenemos el fondo transparente/bóveda si ya aplicaste la mejora anterior,
-          // o usa tu fondo original si prefieres
-          backgroundColor: 'rgba(0, 0, 0, 0.3)', 
-          border: '1px solid rgba(28, 214, 206, 0.3)',
-        }}>
+        <div
+          style={{
+            ...styles.areaJuego,
+            // Mantenemos el fondo transparente/bóveda si ya aplicaste la mejora anterior,
+            // o usa tu fondo original si prefieres
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            border: "1px solid rgba(28, 214, 206, 0.3)",
+          }}
+        >
           {/* ---> NUEVO: Animación CSS inyectada directamente para agilidad */}
           <style>
             {`
@@ -532,76 +611,90 @@ Responde SOLO con este JSON (sin markdown):
           </style>
 
           {objetosCayendo.map((obj) => (
-            <div key={obj.id} style={{
+            <div
+              key={obj.id}
+              style={{
                 ...styles.objetoCayendo,
-                left: `${obj.x}px`, 
+                left: `${obj.x}px`,
                 top: `${obj.y}px`,
                 // ---> NUEVO: Diseño de "Tarjetas Digitales" mejorado
-                background: obj.esBueno 
-                  ? 'linear-gradient(135deg, rgba(22, 163, 74, 0.9), rgba(21, 128, 61, 0.95))' 
-                  : 'linear-gradient(135deg, rgba(220, 38, 38, 0.9), rgba(185, 28, 28, 0.95))',
-                borderColor: obj.esBueno ? '#4ade80' : '#f87171',
-                boxShadow: obj.esBueno 
-                  ? '0 10px 20px rgba(34, 197, 94, 0.4)' 
-                  : '0 10px 20px rgba(239, 68, 68, 0.4)',
-              }}>
-              
-              <div style={{
-                background: 'rgba(255,255,255,0.2)', 
-                borderRadius: '50%', 
-                width: '56px', 
-                height: '56px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                marginBottom: '5px'
-              }}>
+                background: obj.esBueno
+                  ? "linear-gradient(135deg, rgba(22, 163, 74, 0.9), rgba(21, 128, 61, 0.95))"
+                  : "linear-gradient(135deg, rgba(220, 38, 38, 0.9), rgba(185, 28, 28, 0.95))",
+                borderColor: obj.esBueno ? "#4ade80" : "#f87171",
+                boxShadow: obj.esBueno
+                  ? "0 10px 20px rgba(34, 197, 94, 0.4)"
+                  : "0 10px 20px rgba(239, 68, 68, 0.4)",
+              }}
+            >
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.2)",
+                  borderRadius: "50%",
+                  width: "56px",
+                  height: "56px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "5px",
+                }}
+              >
                 <span style={styles.objetoEmoji}>{obj.emoji}</span>
               </div>
-              <span style={{
-                ...styles.objetoTexto,
-                color: 'white',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
-              }}>{obj.nombre}</span>
+              <span
+                style={{
+                  ...styles.objetoTexto,
+                  color: "white",
+                  textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+                }}
+              >
+                {obj.nombre}
+              </span>
             </div>
           ))}
 
           {/* ---> NUEVO: Renderizado de los números flotantes (+10) */}
           {efectosFlotantes.map((efecto) => (
-            <div key={efecto.id} style={{
-              position: 'absolute',
-              left: `${efecto.x + 20}px`,
-              top: `${efecto.y - 20}px`,
-              color: '#4ade80',
-              fontSize: '28px',
-              fontWeight: '900',
-              textShadow: '0px 0px 10px rgba(34, 197, 94, 0.8), 2px 2px 0px #000',
-              animation: 'floatUpAndFade 0.8s ease-out forwards',
-              pointerEvents: 'none',
-              zIndex: 10
-            }}>
+            <div
+              key={efecto.id}
+              style={{
+                position: "absolute",
+                left: `${efecto.x + 20}px`,
+                top: `${efecto.y - 20}px`,
+                color: "#4ade80",
+                fontSize: "28px",
+                fontWeight: "900",
+                textShadow:
+                  "0px 0px 10px rgba(34, 197, 94, 0.8), 2px 2px 0px #000",
+                animation: "floatUpAndFade 0.8s ease-out forwards",
+                pointerEvents: "none",
+                zIndex: 10,
+              }}
+            >
               +{efecto.puntos}
             </div>
           ))}
 
           {/* Jugador */}
           {personajeSeleccionado && (
-            <div style={{
-                position: 'absolute', 
-                left: `${posicionJugador}px`, 
-                bottom: '20px',
-                width: `${TAMANO_JUGADOR}px`, 
-                height: `${TAMANO_JUGADOR}px`, 
-                transition: 'left 0.08s linear'
-              }}>
-              <img 
-                src={personajeSeleccionado.sprite} 
-                alt="Jugador" 
-                style={{width:'100%', height:'100%', objectFit:'contain'}} 
+            <div
+              style={{
+                position: "absolute",
+                left: `${posicionJugador}px`,
+                bottom: "20px",
+                width: `${TAMANO_JUGADOR}px`,
+                height: `${TAMANO_JUGADOR}px`,
+                transition: "left 0.08s linear",
+              }}
+            >
+              <img
+                src={personajeSeleccionado.sprite}
+                alt="Jugador"
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
               />
             </div>
           )}
-          
+
           {/* Leyenda */}
           <div style={styles.legend}>
             <span style={styles.legendGood}>🟢 Proteger</span>
@@ -613,62 +706,69 @@ Responde SOLO con este JSON (sin markdown):
   }
 
   // PANTALLA: Victoria/Derrota
-  if (pantalla === 'victoria' || pantalla === 'derrota') {
-      const esVictoria = pantalla === 'victoria';
-      return (
-        <div style={styles.container}>
-          <div style={styles.finalCard}>
-            <div style={{
+  if (pantalla === "victoria" || pantalla === "derrota") {
+    const esVictoria = pantalla === "victoria";
+    return (
+      <div style={styles.container}>
+        <div style={styles.finalCard}>
+          <div
+            style={{
               ...styles.finalIcon,
-              background: esVictoria 
-                ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-            }}>
-              {esVictoria ? '🏆' : '💪'}
-            </div>
-            
-            <h1 style={{
+              background: esVictoria
+                ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                : "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+            }}
+          >
+            {esVictoria ? "🏆" : "💪"}
+          </div>
+
+          <h1
+            style={{
               ...styles.finalTitle,
-              color: esVictoria ? '#10b981' : '#f59e0b'
-            }}>
-                {esVictoria ? '¡Victoria!' : '¡Buen intento!'}
-            </h1>
-            
-            <p style={styles.finalMessage}>
-              {esVictoria 
-                ? '¡Excelente! Protegiste tus datos privados como un experto.' 
-                : 'Recuerda: los datos privados siempre deben protegerse.'}
-            </p>
-            
-            <div style={styles.statsGrid}>
-              <div style={styles.statBox}>
-                <Star size={32} color="#fbbf24" />
-                <span style={styles.statValue}>{puntos}</span>
-                <span style={styles.statLabel}>Puntos</span>
-              </div>
-              <div style={styles.statBox}>
-                <Shield size={32} color="#10b981" />
-                <span style={styles.statValue}>{datosAtrapados}</span>
-                <span style={styles.statLabel}>Protegidos</span>
-              </div>
-              <div style={styles.statBox}>
-                <Heart size={32} color="#ef4444" />
-                <span style={styles.statValue}>{vidas}</span>
-                <span style={styles.statLabel}>Vidas</span>
-              </div>
+              color: esVictoria ? "#10b981" : "#f59e0b",
+            }}
+          >
+            {esVictoria ? "¡Victoria!" : "¡Buen intento!"}
+          </h1>
+
+          <p style={styles.finalMessage}>
+            {esVictoria
+              ? "¡Excelente! Protegiste tus datos privados como un experto."
+              : "Recuerda: los datos privados siempre deben protegerse."}
+          </p>
+
+          <div style={styles.statsGrid}>
+            <div style={styles.statBox}>
+              <Star size={32} color="#fbbf24" />
+              <span style={styles.statValue}>{puntos}</span>
+              <span style={styles.statLabel}>Puntos</span>
             </div>
-            
-            <div style={styles.finalButtons}>
-              <button style={styles.primaryButton} onClick={reiniciar}>
-                🔄 Jugar de nuevo
-              </button>
-              <button style={styles.secondaryButton} onClick={() => navigate('/menu-juegos')}>
-                🏠 Volver al menú
-              </button>
+            <div style={styles.statBox}>
+              <Shield size={32} color="#10b981" />
+              <span style={styles.statValue}>{datosAtrapados}</span>
+              <span style={styles.statLabel}>Protegidos</span>
+            </div>
+            <div style={styles.statBox}>
+              <Heart size={32} color="#ef4444" />
+              <span style={styles.statValue}>{vidas}</span>
+              <span style={styles.statLabel}>Vidas</span>
             </div>
           </div>
+
+          <div style={styles.finalButtons}>
+            <button style={styles.primaryButton} onClick={reiniciar}>
+              🔄 Jugar de nuevo
+            </button>
+            <button
+              style={styles.secondaryButton}
+              onClick={() => navigate("/menu-juegos")}
+            >
+              🏠 Volver al menú
+            </button>
+          </div>
         </div>
-      );
+      </div>
+    );
   }
 
   return null;
@@ -676,380 +776,383 @@ Responde SOLO con este JSON (sin markdown):
 
 const styles = {
   container: {
-    minHeight: '100vh',
+    minHeight: "100vh",
     // Fondo Bóveda Digital para el menú/intro
-    backgroundColor: '#0b132b',
-    backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(28, 214, 206, 0.15) 0%, transparent 60%), linear-gradient(rgba(28, 214, 206, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(28, 214, 206, 0.05) 1px, transparent 1px)',
-    backgroundSize: '100% 100%, 40px 40px, 40px 40px',
-    backgroundPosition: 'center center',
-    padding: '20px',
+    backgroundColor: "#0b132b",
+    backgroundImage:
+      "radial-gradient(circle at 50% 50%, rgba(28, 214, 206, 0.15) 0%, transparent 60%), linear-gradient(rgba(28, 214, 206, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(28, 214, 206, 0.05) 1px, transparent 1px)",
+    backgroundSize: "100% 100%, 40px 40px, 40px 40px",
+    backgroundPosition: "center center",
+    padding: "20px",
     fontFamily: "'Poppins', sans-serif",
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   loadingContainer: {
-    minHeight: '100vh',
-    backgroundColor: '#0b132b',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
+    minHeight: "100vh",
+    backgroundColor: "#0b132b",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   loadingText: {
-    color: 'white',
-    marginTop: '20px',
-    fontSize: '18px'
+    color: "white",
+    marginTop: "20px",
+    fontSize: "18px",
   },
-  
+
   // Intro
   introCard: {
-    background: 'white',
-    borderRadius: '25px',
-    padding: '30px',
-    maxWidth: '500px',
-    width: '100%',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-    textAlign: 'center'
+    background: "white",
+    borderRadius: "25px",
+    padding: "30px",
+    maxWidth: "500px",
+    width: "100%",
+    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+    textAlign: "center",
   },
   introIconContainer: {
-    background: 'linear-gradient(135deg, #1CD6CE 0%, #0b132b 100%)', // Adaptado al tema de seguridad
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 20px',
-    boxShadow: '0 10px 30px rgba(28, 214, 206, 0.4)'
+    background: "linear-gradient(135deg, #1CD6CE 0%, #0b132b 100%)", // Adaptado al tema de seguridad
+    width: "80px",
+    height: "80px",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto 20px",
+    boxShadow: "0 10px 30px rgba(28, 214, 206, 0.4)",
   },
   introTitle: {
-    fontSize: '28px',
-    color: '#1f2937',
-    marginBottom: '8px',
-    fontWeight: '800'
+    fontSize: "28px",
+    color: "#1f2937",
+    marginBottom: "8px",
+    fontWeight: "800",
   },
   introSubtitle: {
-    fontSize: '14px',
-    color: '#6b7280',
-    marginBottom: '25px'
+    fontSize: "14px",
+    color: "#6b7280",
+    marginBottom: "25px",
   },
   instructionsBox: {
-    background: '#f3f4f6',
-    borderRadius: '15px',
-    padding: '20px',
-    marginBottom: '20px',
-    textAlign: 'left'
+    background: "#f3f4f6",
+    borderRadius: "15px",
+    padding: "20px",
+    marginBottom: "20px",
+    textAlign: "left",
   },
   instructionsTitle: {
-    fontSize: '16px',
-    color: '#1f2937',
-    marginBottom: '15px',
-    fontWeight: 'bold'
+    fontSize: "16px",
+    color: "#1f2937",
+    marginBottom: "15px",
+    fontWeight: "bold",
   },
   instructionItem: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '12px',
-    marginBottom: '12px'
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "12px",
+    marginBottom: "12px",
   },
   instructionIcon: {
-    width: '36px',
-    height: '36px',
-    background: 'white',
-    borderRadius: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "36px",
+    height: "36px",
+    background: "white",
+    borderRadius: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     flexShrink: 0,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
   },
   instructionText: {
-    fontSize: '13px',
-    color: '#4b5563',
-    lineHeight: 1.4
+    fontSize: "13px",
+    color: "#4b5563",
+    lineHeight: 1.4,
   },
   controlsBox: {
-    marginBottom: '20px'
+    marginBottom: "20px",
   },
   controlsTitle: {
-    fontSize: '14px',
-    color: '#1f2937',
-    marginBottom: '10px',
-    fontWeight: 'bold'
+    fontSize: "14px",
+    color: "#1f2937",
+    marginBottom: "10px",
+    fontWeight: "bold",
   },
   controlsGrid: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '15px',
-    flexWrap: 'wrap'
+    display: "flex",
+    justifyContent: "center",
+    gap: "15px",
+    flexWrap: "wrap",
   },
   controlItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    fontSize: '12px',
-    color: '#6b7280'
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "12px",
+    color: "#6b7280",
   },
   controlKey: {
-    background: '#e5e7eb',
-    padding: '6px 10px',
-    borderRadius: '6px',
-    fontWeight: 'bold',
-    fontSize: '12px'
+    background: "#e5e7eb",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    fontWeight: "bold",
+    fontSize: "12px",
   },
   rulesBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    marginBottom: '20px'
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    marginBottom: "20px",
   },
   ruleItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    fontSize: '12px',
-    color: '#6b7280'
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "12px",
+    color: "#6b7280",
   },
   startButton: {
-    background: 'linear-gradient(135deg, #1CD6CE 0%, #089b95 100%)', // Botón tema seguridad
-    color: 'white',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    padding: '15px',
-    border: 'none',
-    borderRadius: '15px',
-    cursor: 'pointer',
-    width: '100%',
-    boxShadow: '0 4px 15px rgba(28, 214, 206, 0.4)'
+    background: "linear-gradient(135deg, #1CD6CE 0%, #089b95 100%)", // Botón tema seguridad
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "bold",
+    padding: "15px",
+    border: "none",
+    borderRadius: "15px",
+    cursor: "pointer",
+    width: "100%",
+    boxShadow: "0 4px 15px rgba(28, 214, 206, 0.4)",
   },
-  
+
   // Selección
   seleccionCard: {
-    background: 'white',
-    borderRadius: '25px',
-    padding: '30px',
-    maxWidth: '500px',
-    width: '100%',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-    textAlign: 'center'
+    background: "white",
+    borderRadius: "25px",
+    padding: "30px",
+    maxWidth: "500px",
+    width: "100%",
+    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+    textAlign: "center",
   },
   seleccionTitle: {
-    fontSize: '24px',
-    color: '#1f2937',
-    marginBottom: '8px',
-    fontWeight: 'bold'
+    fontSize: "24px",
+    color: "#1f2937",
+    marginBottom: "8px",
+    fontWeight: "bold",
   },
   seleccionSubtitle: {
-    fontSize: '14px',
-    color: '#6b7280',
-    marginBottom: '25px'
+    fontSize: "14px",
+    color: "#6b7280",
+    marginBottom: "25px",
   },
   personajesGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '15px',
-    marginBottom: '20px'
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "15px",
+    marginBottom: "20px",
   },
   tarjetaPersonaje: {
-    background: '#f3f4f6',
-    padding: '20px',
-    borderRadius: '15px',
-    cursor: 'pointer',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    border: '3px solid transparent'
+    background: "#f3f4f6",
+    padding: "20px",
+    borderRadius: "15px",
+    cursor: "pointer",
+    transition: "transform 0.2s, box-shadow 0.2s",
+    border: "3px solid transparent",
   },
   personajeImg: {
-    width: '60px',
-    height: '60px',
-    objectFit: 'contain',
-    marginBottom: '10px'
+    width: "60px",
+    height: "60px",
+    objectFit: "contain",
+    marginBottom: "10px",
   },
   nombrePersonaje: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#1f2937',
-    margin: 0
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#1f2937",
+    margin: 0,
   },
   backButton: {
-    background: 'transparent',
-    color: 'white', // Ajustado a blanco para que se vea sobre el fondo oscuro
-    fontSize: '14px',
-    padding: '10px',
-    border: 'none',
-    cursor: 'pointer'
+    background: "transparent",
+    color: "white", // Ajustado a blanco para que se vea sobre el fondo oscuro
+    fontSize: "14px",
+    padding: "10px",
+    border: "none",
+    cursor: "pointer",
   },
-  
+
   // Juego
   gameContainer: {
-    minHeight: '100vh',
+    minHeight: "100vh",
     // Fondo Bóveda Digital principal
-    backgroundColor: '#0b132b',
-    backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(28, 214, 206, 0.15) 0%, transparent 60%), linear-gradient(rgba(28, 214, 206, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(28, 214, 206, 0.05) 1px, transparent 1px)',
-    backgroundSize: '100% 100%, 40px 40px, 40px 40px',
-    backgroundPosition: 'center center',
-    padding: '20px',
-    fontFamily: "'Poppins', sans-serif"
+    backgroundColor: "#0b132b",
+    backgroundImage:
+      "radial-gradient(circle at 50% 50%, rgba(28, 214, 206, 0.15) 0%, transparent 60%), linear-gradient(rgba(28, 214, 206, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(28, 214, 206, 0.05) 1px, transparent 1px)",
+    backgroundSize: "100% 100%, 40px 40px, 40px 40px",
+    backgroundPosition: "center center",
+    padding: "20px",
+    fontFamily: "'Poppins', sans-serif",
   },
   gameHeader: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    background: 'rgba(255,255,255,0.95)',
-    padding: '12px 20px',
-    borderRadius: '15px',
-    marginBottom: '15px',
-    maxWidth: '1000px',
-    margin: '0 auto 15px',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.4)'
+    display: "flex",
+    justifyContent: "space-around",
+    background: "rgba(255,255,255,0.95)",
+    padding: "12px 20px",
+    borderRadius: "15px",
+    marginBottom: "15px",
+    maxWidth: "1000px",
+    margin: "0 auto 15px",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.4)",
   },
   headerStat: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   },
   headerStatText: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#1f2937'
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#1f2937",
   },
   livesContainer: {
-    display: 'flex',
-    gap: '4px'
+    display: "flex",
+    gap: "4px",
   },
   areaJuego: {
-    width: '100%',
-    maxWidth: '1000px',
-    height: '650px',
-    position: 'relative',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Cristal transparente oscuro
-    border: '1px solid rgba(28, 214, 206, 0.3)', // Borde cyber-seguridad
-    borderRadius: '15px',
-    overflow: 'hidden',
-    margin: '0 auto',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.6)'
+    width: "100%",
+    maxWidth: "1000px",
+    height: "650px",
+    position: "relative",
+    backgroundColor: "rgba(0, 0, 0, 0.2)", // Cristal transparente oscuro
+    border: "1px solid rgba(28, 214, 206, 0.3)", // Borde cyber-seguridad
+    borderRadius: "15px",
+    overflow: "hidden",
+    margin: "0 auto",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
   },
   objetoCayendo: {
-    position: 'absolute',
-    width: '110px', /* <-- Aumentado de 90px a 110px */
-    padding: '14px 8px', /* <-- Más espacio interno */
-    borderRadius: '16px',
-    border: '2px solid',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    pointerEvents: 'none',
-    backdropFilter: 'blur(4px)',
+    position: "absolute",
+    width: "110px" /* <-- Aumentado de 90px a 110px */,
+    padding: "14px 8px" /* <-- Más espacio interno */,
+    borderRadius: "16px",
+    border: "2px solid",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    pointerEvents: "none",
+    backdropFilter: "blur(4px)",
   },
   objetoEmoji: {
-    fontSize: '36px' /* <-- Aumentado de 24px a 36px */
+    fontSize: "36px" /* <-- Aumentado de 24px a 36px */,
   },
   objetoTexto: {
-    fontSize: '12px', /* <-- Aumentado de 9px a 12px (Clave para que los niños lean bien) */
-    fontWeight: 'bold',
-    textAlign: 'center',
-    lineHeight: 1.2
+    fontSize:
+      "12px" /* <-- Aumentado de 9px a 12px (Clave para que los niños lean bien) */,
+    fontWeight: "bold",
+    textAlign: "center",
+    lineHeight: 1.2,
   },
   legend: {
-    position: 'absolute',
-    bottom: '10px',
-    right: '10px',
-    background: 'rgba(255,255,255,0.9)',
-    padding: '8px 12px',
-    borderRadius: '8px',
-    display: 'flex',
-    gap: '15px',
-    fontSize: '12px',
-    fontWeight: 'bold'
+    position: "absolute",
+    bottom: "10px",
+    right: "10px",
+    background: "rgba(255,255,255,0.9)",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    display: "flex",
+    gap: "15px",
+    fontSize: "12px",
+    fontWeight: "bold",
   },
   legendGood: {
-    color: '#166534'
+    color: "#166534",
   },
   legendBad: {
-    color: '#991b1b'
+    color: "#991b1b",
   },
-  
+
   // Final
   finalCard: {
-    background: 'white',
-    borderRadius: '25px',
-    padding: '30px',
-    maxWidth: '450px',
-    width: '100%',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-    textAlign: 'center'
+    background: "white",
+    borderRadius: "25px",
+    padding: "30px",
+    maxWidth: "450px",
+    width: "100%",
+    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+    textAlign: "center",
   },
   finalIcon: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 20px',
-    fontSize: '40px',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+    width: "80px",
+    height: "80px",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto 20px",
+    fontSize: "40px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
   },
   finalTitle: {
-    fontSize: '32px',
-    fontWeight: 'bold',
-    marginBottom: '10px'
+    fontSize: "32px",
+    fontWeight: "bold",
+    marginBottom: "10px",
   },
   finalMessage: {
-    fontSize: '14px',
-    color: '#6b7280',
-    marginBottom: '25px'
+    fontSize: "14px",
+    color: "#6b7280",
+    marginBottom: "25px",
   },
   statsGrid: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '25px'
+    display: "flex",
+    justifyContent: "center",
+    gap: "20px",
+    marginBottom: "25px",
   },
   statBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    background: '#f3f4f6',
-    padding: '15px 20px',
-    borderRadius: '12px'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    background: "#f3f4f6",
+    padding: "15px 20px",
+    borderRadius: "12px",
   },
   statValue: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#1f2937',
-    margin: '8px 0 4px'
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#1f2937",
+    margin: "8px 0 4px",
   },
   statLabel: {
-    fontSize: '11px',
-    color: '#6b7280'
+    fontSize: "11px",
+    color: "#6b7280",
   },
   finalButtons: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px'
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
   primaryButton: {
-    background: 'linear-gradient(135deg, #1CD6CE 0%, #089b95 100%)',
-    color: 'white',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    padding: '15px',
-    border: 'none',
-    borderRadius: '15px',
-    cursor: 'pointer',
-    boxShadow: '0 4px 15px rgba(28, 214, 206, 0.4)'
+    background: "linear-gradient(135deg, #1CD6CE 0%, #089b95 100%)",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "bold",
+    padding: "15px",
+    border: "none",
+    borderRadius: "15px",
+    cursor: "pointer",
+    boxShadow: "0 4px 15px rgba(28, 214, 206, 0.4)",
   },
   secondaryButton: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-    color: 'white',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    padding: '15px',
-    border: 'none',
-    borderRadius: '15px',
-    cursor: 'pointer',
-    boxShadow: '0 4px 15px rgba(59,130,246,0.4)'
-  }
+    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "bold",
+    padding: "15px",
+    border: "none",
+    borderRadius: "15px",
+    cursor: "pointer",
+    boxShadow: "0 4px 15px rgba(59,130,246,0.4)",
+  },
 };
 
 export default JuegoTesoroPrivacidad;
